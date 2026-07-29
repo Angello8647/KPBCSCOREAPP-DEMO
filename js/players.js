@@ -302,3 +302,43 @@ function clearAllPlayers() {
         loadPlayersList();
     }
 }
+
+
+
+/**
+ * ✅ NIEUW: Haalt tornooi-deelnemers op en voegt ze toe aan state.players als
+ * synthetische spelers (discipline "Tornooi"), naast de gewone competitiespelers.
+ * Raakt de bestaande competitie-spelerslijst nooit aan.
+ */
+window.fetchTournamentPlayersFromAPI = async function() {
+    try {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/export/users");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const users = await response.json();
+
+        // Vervang enkel de tornooi-spelers, laat de rest van state.players ongemoeid
+        state.players = state.players.filter(p => p.discipline !== 'Tornooi');
+
+        users.forEach(user => {
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+            (user.stats || []).forEach(stat => {
+                state.players.push({
+                    id: parseInt(stat.club_id),
+                    user_id: user.id,
+                    name: fullName,
+                    email: user.email || '',
+                    discipline: stat.discipline,
+                    category: stat.category,
+                    target: parseInt(stat.target) || 0,
+                    tsg: stat.tsg || '0,000',
+                    pnt: parseInt(stat.target) || 0
+                });
+            });
+        });
+
+        savePlayersToStorage();
+        console.log(`✅ ${users.length} tornooi-deelnemer(s) opgehaald`);
+    } catch (error) {
+        console.warn("⚠️ Kon tornooi-deelnemers niet ophalen:", error);
+    }
+};
