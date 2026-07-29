@@ -285,8 +285,8 @@ window.syncTournamentMatchToAPI = async function(match) {
         status: "voltooid",
         winner_club_id: winnerClubId,
         players: [
-            { club_id: match.p1_club_id, score: match.p1Score, beurten: match.p1Turns.length, hoogste_reeks: match.p1Highest || 0 },
-            { club_id: match.p2_club_id, score: match.p2Score, beurten: match.p2Turns.length, hoogste_reeks: match.p2Highest || 0 }
+            { club_id: match.p1_club_id, score: match.p1Score, beurten: match.p1Turns.length, hoogste_reeks: match.p1Highest || 0, turns_detail: match.p1Turns || [] },
+            { club_id: match.p2_club_id, score: match.p2Score, beurten: match.p2Turns.length, hoogste_reeks: match.p2Highest || 0, turns_detail: match.p2Turns || [] }
         ]
     };
 
