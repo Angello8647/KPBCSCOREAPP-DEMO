@@ -107,7 +107,15 @@ async function fetchMatchesFromAPI() {
         
         // 💾 STAP 3: Altijd opslaan na een sync-actie
         saveStateToStorage();
-        
+
+        // ✅ NIEUW: haal ook tornooi-spelers en -matchen op voor dezelfde datum
+        if (typeof window.fetchTournamentPlayersFromAPI === 'function') {
+            await window.fetchTournamentPlayersFromAPI();
+        }
+        if (typeof window.fetchTournamentMatchesFromAPI === 'function') {
+            await window.fetchTournamentMatchesFromAPI();
+        }
+
         if (state.currentPage === 4) {
             loadFilteredMatches();
         } else if (state.currentPage === 7) {
@@ -439,3 +447,67 @@ function createManualMatch() {
     alert(`✅ Nieuwe match aangemaakt:\n${state.newMatch.player1.name} vs ${state.newMatch.player2.name}`);
     showPage(4);
 }
+
+
+/**
+ * ✅ NIEUW: Haalt tornooi-matchen op voor de geselecteerde datum en voegt ze toe
+ * aan state.matches, naast de gewone competitiematchen. Gebruikt de expliciete,
+ * unieke match_id die de server meegeeft (bv. "T3M9") in plaats van er zelf een
+ * te berekenen uit club_id's.
+ */
+window.fetchTournamentMatchesFromAPI = async function() {
+    try {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/export/matches");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const apiMatches = await response.json();
+
+        // Verwijder oude, nog niet voltooide tornooi-matchen voor deze datum (voorkomt duplicaten)
+        state.matches = state.matches.filter(m => {
+            const isTournament = m.discipline === 'Tornooi';
+            return !(isTournament && m.date === state.selectedDate && !m.completed);
+        });
+
+        let added = 0;
+        apiMatches.forEach(apiMatch => {
+            if (apiMatch.match_date !== state.selectedDate) return;
+
+            const [p1Data, p2Data] = apiMatch.players;
+            const player1 = state.players.find(p => String(p.id) === String(p1Data.club_id));
+            const player2 = state.players.find(p => String(p.id) === String(p2Data.club_id));
+
+            state.matches.push({
+                id: apiMatch.match_id,
+                date: apiMatch.match_date,
+                time: apiMatch.match_time || '',
+                table: apiMatch.table_nr || 1,
+                p1: player1 ? player1.name : `ONBEKEND (ID: ${p1Data.club_id})`,
+                p2: player2 ? player2.name : `ONBEKEND (ID: ${p2Data.club_id})`,
+                referee: null,
+                p1_club_id: parseInt(p1Data.club_id),
+                p2_club_id: parseInt(p2Data.club_id),
+                target1: player1 ? player1.target : 0,
+                target2: player2 ? player2.target : 0,
+                discipline: apiMatch.discipline,
+                cat: apiMatch.category,
+                match_type: apiMatch.match_type || 'Speler',
+                completed: false,
+                whitePlayer: null,
+                p1Score: 0, p2Score: 0,
+                p1Turns: [], p2Turns: [],
+                p1Highest: 0, p2Highest: 0,
+                synced_at: new Date().toISOString()
+            });
+            added++;
+        });
+
+        if (added > 0) {
+            saveStateToStorage();
+            console.log(`✅ ${added} tornooi-match(en) toegevoegd voor ${state.selectedDate}`);
+        }
+
+        if (state.currentPage === 4) loadFilteredMatches();
+        else if (state.currentPage === 7) loadMatchesTabContent();
+    } catch (error) {
+        console.warn("⚠️ Kon tornooi-matchen niet ophalen:", error);
+    }
+};
