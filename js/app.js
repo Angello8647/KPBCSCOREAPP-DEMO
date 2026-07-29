@@ -12,8 +12,14 @@ window.onload = function() {
             console.log("🔄 Geen spelers lokaal — automatisch ophalen van de server...");
             await fetchPlayersFromAPI();
         }
+        if (typeof window.fetchTournamentPlayersFromAPI === 'function') {
+            await window.fetchTournamentPlayersFromAPI();
+        }
         if (typeof window.restoreCompletedMatchesFromAPI === 'function') {
             window.restoreCompletedMatchesFromAPI();
+        }
+        if (typeof window.restoreTournamentMatchesFromAPI === 'function') {
+            window.restoreTournamentMatchesFromAPI();
         }
     })();
 
