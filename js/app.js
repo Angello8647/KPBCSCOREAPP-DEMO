@@ -67,6 +67,11 @@ window.onload = function() {
  * met lokale fallback bij netwerkfouten.
  */
 window.syncMatchToAPI = async function(match) {
+    // ✅ NIEUW: tornooi-matchen lopen via een apart endpoint
+    if (match.discipline === 'Tornooi') {
+        return window.syncTournamentMatchToAPI(match);
+    }
+
     // 1. Bepaal de winnaar op basis van de score
     // ✅ FIX: bij een exact gelijkspel (mogelijk bij Dames) is er géén winnaar;
     // voorheen werd dan onterecht speler 2 als winnaar doorgestuurd omdat
