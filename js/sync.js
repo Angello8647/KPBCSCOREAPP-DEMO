@@ -46,6 +46,11 @@ window.fetchMatchResultsFromAPI = async function() {
  * met lokale fallback bij netwerkfouten.
  */
 window.syncMatchToAPI = async function(match) {
+    // ✅ NIEUW: tornooi-matchen lopen via een apart endpoint, niet via de competitietabellen
+    if (match.discipline === 'Tornooi') {
+        return window.syncTournamentMatchToAPI(match);
+    }
+
     // 1. Bepaal de winnaar op basis van de score
     // ✅ FIX: bij een exact gelijkspel (mogelijk bij Dames) is er géén winnaar;
     // voorheen werd dan onterecht speler 2 als winnaar doorgestuurd omdat
@@ -262,4 +267,91 @@ window.restoreCompletedMatchesFromAPI = async function() {
     }
 };
 
+/**
+ * ✅ NIEUW: Synchroniseert een voltooide TORNOOI-match naar het aparte
+ * tornooi-endpoint. Geen wachtrij-fallback (zoals bij de competitie) —
+ * bij netwerkfout moet de planner de uitslag dan manueel invullen.
+ */
+window.syncTournamentMatchToAPI = async function(match) {
+    let winnerClubId = null;
+    if (match.p1Score > match.p2Score) winnerClubId = match.p1_club_id;
+    else if (match.p2Score > match.p1Score) winnerClubId = match.p2_club_id;
 
+    const payload = {
+        match_id: match.id,
+        played_date: match.date,
+        discipline: match.discipline,
+        categorie: match.cat,
+        status: "voltooid",
+        winner_club_id: winnerClubId,
+        players: [
+            { club_id: match.p1_club_id, score: match.p1Score, beurten: match.p1Turns.length, hoogste_reeks: match.p1Highest || 0 },
+            { club_id: match.p2_club_id, score: match.p2Score, beurten: match.p2Turns.length, hoogste_reeks: match.p2Highest || 0 }
+        ]
+    };
+
+    try {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            console.log("✅ Tornooi-match succesvol gesynchroniseerd!");
+            return true;
+        }
+        throw new Error(`Server fout: ${response.status}`);
+    } catch (error) {
+        console.warn("⚠️ Kon tornooi-uitslag niet versturen:", error);
+        return false;
+    }
+};
+
+/**
+ * ✅ NIEUW: Haalt voltooide tornooi-matchen op en vult lokaal aan wat ontbreekt
+ * (zelfde principe als restoreCompletedMatchesFromAPI, maar voor tornooien).
+ */
+window.restoreTournamentMatchesFromAPI = async function() {
+    try {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-results");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const results = await response.json();
+
+        let added = 0;
+        results.forEach(r => {
+            if (!r.players || r.players.length < 2) return;
+            if (state.matches.some(m => m.id === r.match_id)) return;
+
+            const [pd1, pd2] = r.players;
+            const c1 = String(pd1.club_id), c2 = String(pd2.club_id);
+            const pl1 = state.players.find(p => String(p.id) === c1);
+            const pl2 = state.players.find(p => String(p.id) === c2);
+            const p1Name = pl1 ? pl1.name : `ONBEKEND (ID: ${c1})`;
+            const p2Name = pl2 ? pl2.name : `ONBEKEND (ID: ${c2})`;
+            const winnerName = String(r.winner_club_id) === c1 ? p1Name : (String(r.winner_club_id) === c2 ? p2Name : "Onbekend");
+
+            state.matches.push({
+                id: r.match_id,
+                date: r.played_date,
+                p1: p1Name, p2: p2Name,
+                p1_club_id: parseInt(c1), p2_club_id: parseInt(c2),
+                target1: pl1 ? pl1.target : 0, target2: pl2 ? pl2.target : 0,
+                discipline: r.discipline, cat: r.category,
+                completed: true,
+                p1Score: pd1.score, p2Score: pd2.score,
+                p1Turns: [], p2Turns: [],
+                p1Highest: pd1.hoogste_reeks || 0, p2Highest: pd2.hoogste_reeks || 0,
+                winner: winnerName,
+                restoredFromServer: true
+            });
+            added++;
+        });
+
+        if (added > 0) {
+            saveStateToStorage();
+            console.log(`✅ ${added} voltooide tornooi-match(en) hersteld van de server`);
+        }
+    } catch (e) {
+        console.warn("⚠️ Kon tornooi-matchen niet herstellen:", e);
+    }
+};
