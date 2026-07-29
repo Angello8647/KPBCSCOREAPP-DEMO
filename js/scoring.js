@@ -346,7 +346,17 @@ window.changeScore = function(delta) {
     if (state.matchEnded) return;
     
     const pot = state.currentInput + delta;
-    state.currentInput = Math.max(0, pot);
+    let newInput = Math.max(0, pot);
+
+    // ✅ NIEUW: bij tornooi-matchen mag je binnen één beurt niet voorbij het target
+    // klikken (bij de gewone competitie mag dat wel — daar blijft alles ongewijzigd).
+    if (state.currentMatch && state.currentMatch.discipline === 'Tornooi') {
+        const p = state.currentPlayer === 1 ? state.player1 : state.player2;
+        const maxAllowed = Math.max(0, p.target - p.score);
+        newInput = Math.min(newInput, maxAllowed);
+    }
+
+    state.currentInput = newInput;
     
     // ✅ HIER ROEPEN WE DE SPRAAKFUNCTIE AAN ALS ER PUNTEN BIJ KOMEN (+)
     if (delta > 0) {
