@@ -232,6 +232,13 @@ window.selectMatch = function(id) {
         alert("Deze match is al voltooid.");
         return;
     }
+
+    // ✅ NIEUW: tornooi-dubbeltje — start de bestaande 4-speler dubbeltje-motor
+    // (bal-selectie pagina 13) i.p.v. de gewone 1-tegen-1-flow via pagina 4.
+    if (match.isDubbelTournament) {
+        window.startTournamentDubbelMatch(match);
+        return;
+    }
     
     // Stel de match in
     state.currentMatch = match;
@@ -471,6 +478,46 @@ window.fetchTournamentMatchesFromAPI = async function() {
         apiMatches.forEach(apiMatch => {
             if (apiMatch.match_date !== state.selectedDate) return;
 
+            // ✅ NIEUW: tornooi-dubbeltje — 4 spelers in 2 teams i.p.v. 2 losse spelers.
+            // Wordt apart gemarkeerd (isDubbelTournament) zodat selectMatch() straks
+            // naar de bestaande 4-speler-motor kan sturen i.p.v. de gewone 1-tegen-1-flow.
+            if (apiMatch.format === 'dubbel') {
+                const team1Players = apiMatch.players.filter(p => p.team === 1);
+                const team2Players = apiMatch.players.filter(p => p.team === 2);
+                const lookupName = (cid) => {
+                    const pl = state.players.find(p => String(p.id) === String(cid));
+                    return pl ? pl.name : `ONBEKEND (ID: ${cid})`;
+                };
+                const team1Names = team1Players.map(p => lookupName(p.club_id)).join(' & ');
+                const team2Names = team2Players.map(p => lookupName(p.club_id)).join(' & ');
+
+                state.matches.push({
+                    id: apiMatch.match_id,
+                    date: apiMatch.match_date,
+                    time: apiMatch.match_time || '',
+                    table: apiMatch.table_nr || 1,
+                    p1: team1Names,
+                    p2: team2Names,
+                    referee: null,
+                    discipline: apiMatch.discipline,
+                    cat: apiMatch.category,
+                    match_type: apiMatch.match_type || 'Speler',
+                    isDubbelTournament: true,
+                    dubbelTeams: {
+                        team1: team1Players.map(p => ({ club_id: parseInt(p.club_id), name: lookupName(p.club_id) })),
+                        team2: team2Players.map(p => ({ club_id: parseInt(p.club_id), name: lookupName(p.club_id) }))
+                    },
+                    completed: false,
+                    target1: 70, target2: 70,
+                    p1Score: 0, p2Score: 0,
+                    p1Turns: [], p2Turns: [],
+                    p1Highest: 0, p2Highest: 0,
+                    synced_at: new Date().toISOString()
+                });
+                added++;
+                return;
+            }
+
             const [p1Data, p2Data] = apiMatch.players;
             const player1 = state.players.find(p => String(p.id) === String(p1Data.club_id));
             const player2 = state.players.find(p => String(p.id) === String(p2Data.club_id));
@@ -510,4 +557,36 @@ window.fetchTournamentMatchesFromAPI = async function() {
     } catch (error) {
         console.warn("⚠️ Kon tornooi-matchen niet ophalen:", error);
     }
+};
+
+/**
+ * ✅ NIEUW: Start een tornooi-dubbeltje-match. Bouwt state.friendlyMatch op
+ * (exact zoals bij een vriendschappelijke 4-speler dubbeltje-partij) en
+ * bewaart een koppeling terug naar de tornooi-match (tournamentMatchId +
+ * de echte club_id's), zodat de uitslag straks kan teruggestuurd worden
+ * naar /api/tournament/match-result (dat bouwen we in de volgende stap).
+ */
+window.startTournamentDubbelMatch = function(match) {
+    const t1 = match.dubbelTeams.team1;
+    const t2 = match.dubbelTeams.team2;
+
+    state.friendlyMatch = {
+        numPlayers: 4,
+        gameType: 'dubbeltje',
+        players: {
+            1: { name: t1[0].name, target: 70, average: 0 },
+            2: { name: t1[1].name, target: 70, average: 0 },
+            3: { name: t2[0].name, target: 70, average: 0 },
+            4: { name: t2[1].name, target: 70, average: 0 }
+        },
+        teams: { 1: 1, 2: 1, 3: 2, 4: 2 },
+        orders: { 1: 1, 2: 2, 3: 1, 4: 2 },
+        tournamentMatchId: match.id,
+        tournamentClubIds: { 1: t1[0].club_id, 2: t1[1].club_id, 3: t2[0].club_id, 4: t2[1].club_id }
+    };
+
+    if (typeof window.prepareFriendlyBallSelection === 'function') {
+        window.prepareFriendlyBallSelection();
+    }
+    window.showPage(13);
 };
