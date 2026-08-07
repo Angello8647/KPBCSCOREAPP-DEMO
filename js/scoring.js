@@ -3222,6 +3222,14 @@ window.endFriendlyMatch = function() {
     // 1. Markeer de match als beëindigd
     ts.matchEnded = true;
 
+    // ✅ NIEUW: als dit een tornooi-dubbeltje-match was (herkenbaar aan
+    // tournamentMatchId, gezet in startTournamentDubbelMatch), stuur de uitslag
+    // meteen naar het tornooisysteem — vóórdat we verder gaan met de gewone
+    // vriendschappelijke-samenvatting (die blijft ook gewoon getoond worden).
+    if (fm.tournamentMatchId && typeof window.syncTournamentDubbelResult === 'function') {
+        window.syncTournamentDubbelResult(fm, ts);
+    }
+
     // 2. ✅ Bepaal de winnaar
     let winnerName = "";
     const isPhaseGame = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
