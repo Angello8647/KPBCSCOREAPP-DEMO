@@ -332,7 +332,7 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
             { club_id: cid[4], score: ts.rightTotalScore, beurten: ts.rightTurns.length, hoogste_reeks: ts.rightHighestSeries || 0, turns_detail: ts.rightTurns || [] }
         ]
     };
-
+    console.log("🔍 DEBUG - Dit zouden we normaal naar de server sturen:", JSON.stringify(payload, null, 2));
     try {
         const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
             method: 'POST',
