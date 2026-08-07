@@ -307,6 +307,53 @@ window.syncTournamentMatchToAPI = async function(match) {
     }
 };
 
+
+/**
+ * ✅ NIEUW: Stuurt de uitslag van een tornooi-dubbeltje-match naar
+ * /api/tournament/match-result. Team-links (ts.activeSide === 'left') komt
+ * overeen met fm.players[1]&[2] (=team 1), team-rechts met [3]&[4] (=team 2) —
+ * dat is exact hoe startTournamentDubbelMatch de teams heeft opgebouwd.
+ */
+window.syncTournamentDubbelResult = async function(fm, ts) {
+    const cid = fm.tournamentClubIds;
+    const winnerIsLeft = ts.activeSide === 'left';
+
+    const payload = {
+        match_id: fm.tournamentMatchId,
+        played_date: new Date().toISOString().split('T')[0],
+        discipline: 'Tornooi',
+        categorie: 'Dubbeltje',
+        status: 'voltooid',
+        winner_club_id: winnerIsLeft ? cid[1] : cid[3],
+        players: [
+            { club_id: cid[1], score: ts.leftTotalScore, beurten: ts.leftTurns.length, hoogste_reeks: ts.leftHighestSeries || 0, turns_detail: ts.leftTurns || [] },
+            { club_id: cid[2], score: ts.leftTotalScore, beurten: ts.leftTurns.length, hoogste_reeks: ts.leftHighestSeries || 0, turns_detail: ts.leftTurns || [] },
+            { club_id: cid[3], score: ts.rightTotalScore, beurten: ts.rightTurns.length, hoogste_reeks: ts.rightHighestSeries || 0, turns_detail: ts.rightTurns || [] },
+            { club_id: cid[4], score: ts.rightTotalScore, beurten: ts.rightTurns.length, hoogste_reeks: ts.rightHighestSeries || 0, turns_detail: ts.rightTurns || [] }
+        ]
+    };
+
+    try {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            console.log("✅ Tornooi-dubbeltje-uitslag succesvol gesynchroniseerd!");
+        } else {
+            console.warn("⚠️ Server gaf een foutstatus terug:", response.status);
+        }
+    } catch (error) {
+        console.warn("⚠️ Kon tornooi-dubbeltje-uitslag niet versturen:", error);
+    }
+};
+
+
+
+
+
+
 /**
  * ✅ NIEUW: Haalt voltooide tornooi-matchen op en vult lokaal aan wat ontbreekt
  * (zelfde principe als restoreCompletedMatchesFromAPI, maar voor tornooien).
