@@ -2222,6 +2222,8 @@ window.prepareFriendlyBallSelection = function() {
     container.innerHTML = '';
     startBtn.disabled = true;
     startBtn.classList.add('disabled-btn');
+    // ✅ NIEUW: knoptekst aanpassen naargelang het een tornooi- of vriendschappelijke match is
+    startBtn.textContent = fm.tournamentMatchId ? '🏆 Start Tornooimatch' : '🍻 Start Vriendschappelijke Match';
     state.friendlyMatch.colorAssignments = {};
     state.friendlyMatch.whiteBallOwner = null;
 
@@ -2274,6 +2276,13 @@ window.prepareFriendlyBallSelection = function() {
                 <div class="ball-circle white" style="font-size: 1rem;"><div>Team 2<br><small>${team2Name}</small></div></div>
             </div>
         `;
+        // ✅ NIEUW: wissel-knopjes tonen zodat de spelers zelf kunnen bepalen wie
+        // "speler 1" en "speler 2" van elk team is (niet enkel wie de witte bal heeft).
+        window.renderOrderSwapUI();
+    } else {
+        // ✅ NIEUW: bij 2 of 3 spelers is er geen team-volgorde nodig, dus verberg het blokje
+        const osDiv = document.getElementById('friendlyOrderSwap');
+        if (osDiv) osDiv.innerHTML = '';
     }
     else if (fm.numPlayers === 3) {
         title.textContent = "Wijs Unieke Kleuren Toe";
@@ -2493,6 +2502,46 @@ window.startFriendlyMatchFromBallSelection = function() {
     // ✅ Voor 2 en 4 spelers: navigeer naar Pagina 14
     showPage(14);
     window.initFriendlyScoring();
+};
+
+
+/**
+ * ✅ NIEUW: Toont per team wie momenteel "speler 1" en "speler 2" is, met een
+ * knopje om die volgorde te wisselen — nodig omdat bij een tornooi-match de
+ * teamindeling al vastligt (via het bracket), maar de VOLGORDE binnen elk team
+ * nooit gekozen werd. Herbruikt gewoon fm.orders, exact hetzelfde mechanisme
+ * als bij de gewone team-indeling van een vriendschappelijke match.
+ */
+window.renderOrderSwapUI = function() {
+    const fm = state.friendlyMatch;
+    const container = document.getElementById('friendlyOrderSwap');
+    if (!container || !fm || fm.numPlayers !== 4) { if (container) container.innerHTML = ''; return; }
+
+    const buildTeamBlock = (teamNum) => {
+        const keys = Object.keys(fm.players).filter(p => fm.teams[p] === teamNum).sort((a, b) => fm.orders[a] - fm.orders[b]);
+        const first = fm.players[keys[0]].name;
+        const second = fm.players[keys[1]].name;
+        return `
+            <div style="flex:1;min-width:200px;background:#f8fafc;border-radius:8px;padding:10px;text-align:center;">
+                <div style="font-weight:700;margin-bottom:6px;">Team ${teamNum}</div>
+                <div style="font-size:0.9rem;color:#334155;margin-bottom:8px;">1️⃣ ${first}<br>2️⃣ ${second}</div>
+                <button onclick="window.toggleTeamOrder(${teamNum})" style="padding:6px 12px;border:1px solid #94a3b8;border-radius:6px;background:white;cursor:pointer;font-size:0.85rem;">🔄 Wissel volgorde</button>
+            </div>`;
+    };
+
+    container.innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;">${buildTeamBlock(1)}${buildTeamBlock(2)}</div>`;
+};
+
+window.toggleTeamOrder = function(teamNum) {
+    const fm = state.friendlyMatch;
+    const keys = Object.keys(fm.players).filter(p => fm.teams[p] === teamNum);
+    if (keys.length !== 2) return;
+    const tmp = fm.orders[keys[0]];
+    fm.orders[keys[0]] = fm.orders[keys[1]];
+    fm.orders[keys[1]] = tmp;
+    // ✅ Enkel de wissel-UI zelf herbouwen — de bal-keuze (wit/geel) blijft
+    // ongemoeid, ook als je die al vóór het wisselen had aangeduid.
+    window.renderOrderSwapUI();
 };
 
 
