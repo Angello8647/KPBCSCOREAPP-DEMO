@@ -2279,10 +2279,6 @@ window.prepareFriendlyBallSelection = function() {
         // ✅ NIEUW: wissel-knopjes tonen zodat de spelers zelf kunnen bepalen wie
         // "speler 1" en "speler 2" van elk team is (niet enkel wie de witte bal heeft).
         window.renderOrderSwapUI();
-    } else {
-        // ✅ NIEUW: bij 2 of 3 spelers is er geen team-volgorde nodig, dus verberg het blokje
-        const osDiv = document.getElementById('friendlyOrderSwap');
-        if (osDiv) osDiv.innerHTML = '';
     }
     else if (fm.numPlayers === 3) {
         title.textContent = "Wijs Unieke Kleuren Toe";
