@@ -713,8 +713,13 @@ window.startMatch = function() {
     state.currentMatch.originalTarget1 = originalTarget1;
     state.currentMatch.originalTarget2 = originalTarget2;
 
-    const tsg1 = state.players.find(p => p.name === originalP1)?.tsg || '−';
-    const tsg2 = state.players.find(p => p.name === originalP2)?.tsg || '−';
+    // ✅ FIX: zoeken op naam is onveilig — bij tornooien bestaat dezelfde speler
+    // twee keer in state.players (zijn gewone competitie-rij(en) ÉN zijn
+    // synthetische tornooi-rij), allemaal met exact dezelfde naam. .find() pakte
+    // dan de EERSTE match (vaak de competitie-TSG), niet de juiste tornooi-TSG.
+    // Zoek daarom op club_id, die is altijd uniek.
+    const tsg1 = state.players.find(p => String(p.id) === String(originalP1ClubId))?.tsg || '−';
+    const tsg2 = state.players.find(p => String(p.id) === String(originalP2ClubId))?.tsg || '−';
 
     state.player1 = {
         score: 0, turns: [], target: 0, beurtNummer: 1,
