@@ -228,6 +228,12 @@ function updateScoringPage() {
         extraInfo = '<div style="margin-top:15px; font-size:1.3rem; color:#ffcc00; font-weight:bold; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);">⚠️ NABEURT</div>';
     } else if (state.firstToTarget === 1) {
         extraInfo = '<div style="margin-top:15px; font-size:1.3rem; color:#2ecc71; font-weight:bold; text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);">✅ Laatste beurt voor speler 2</div>';
+    } else if (state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames') && !isWhite && currentBeurt === 15) {
+        // ✅ NIEUW: KONING(IN)SPRIJSKAMP - puur visueel signaal (geen echte score-
+        // gebaseerde nabeurt, want die bestaat hier niet) zodat de scheids weet
+        // dat hij de ballen moet opzetten voor de allerlaatste beurt van de
+        // gele speler.
+        extraInfo = '<div style="margin-top:15px; font-size:1.3rem; color:#ffcc00; font-weight:bold; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);">⚠️ NABEURT</div>';
     }
 
     document.getElementById('currentPlayerDisplay').innerHTML = `
