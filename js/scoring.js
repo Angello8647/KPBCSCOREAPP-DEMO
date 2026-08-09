@@ -426,13 +426,12 @@ window.addScore = function() {
         }
     }
 
-    // ✅ NIEUW: KONING(IN)SPRIJSKAMP - vaste 15 beurten per speler, geen target.
-    // Herkenbaar via .cat ('heren'/'dames') — komt enkel bij dit tornooitype voor.
-    // Winnaar wordt via rendement bepaald (zie endMatch()), dus we slaan de hele
-    // 'reached target'/nabeurt-logica hieronder volledig over.
     const isKoningMatch = state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames';
     if (isKoningMatch) {
-        if (state.player1.turns.length >= 15 && state.player2.turns.length >= 15) {
+        // ✅ NIEUW: tijdens een verlenging (bij een gelijke stand) is het
+        // vereiste aantal beurten 5 i.p.v. de normale 15.
+        const turnsNeeded = (state.koningExtensionRound && state.koningExtensionRound > 0) ? 5 : 15;
+        if (state.player1.turns.length >= turnsNeeded && state.player2.turns.length >= turnsNeeded) {
             endMatch();
             return;
         }
@@ -520,7 +519,41 @@ window.undoLastAdd = function() {
 
 function endMatch() {
     console.log("🔥 END MATCH FUNCTIE AANGEROEPEN!");
-    
+
+    // ✅ NIEUW: KONING(IN)SPRIJSKAMP - check op EXACT gelijk rendement, VOORDAT
+    // er iets naar de server gemeld wordt. Bij een gelijke stand starten we een
+    // verse verlenging van 5 beurten (score/beurten terug op 0) i.p.v. de match
+    // als 'voltooid' door te geven — dus hier meteen 'return', de rest van
+    // endMatch() (server-melding, samenvatting, ...) wordt dan niet uitgevoerd.
+    const isKoningTieCheck = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
+    if (isKoningTieCheck) {
+        const avg1 = state.player1.turns.length > 0 ? state.player1.score / state.player1.turns.length : 0;
+        const avg2 = state.player2.turns.length > 0 ? state.player2.score / state.player2.turns.length : 0;
+        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        const rendement1 = avg1 / tsg1;
+        const rendement2 = avg2 / tsg2;
+        // Afronden op 5 decimalen om floating-point-ruis te vermijden bij de gelijkheidscheck
+        const r1Rounded = Math.round(rendement1 * 100000);
+        const r2Rounded = Math.round(rendement2 * 100000);
+
+        if (r1Rounded === r2Rounded) {
+            state.koningExtensionRound = (state.koningExtensionRound || 0) + 1;
+            state.player1.score = 0; state.player1.turns = []; state.player1.beurtNummer = 1; state.player1.highestSeries = 0;
+            state.player2.score = 0; state.player2.turns = []; state.player2.beurtNummer = 1; state.player2.highestSeries = 0;
+            state.matchEnded = false;
+            state.currentPlayer = 1;
+            state.isFirstPlayerInRound = true;
+            state.turnNumber = 1;
+            state.currentInput = 0;
+            alert(`⚖️ Gelijke stand! Verlenging ${state.koningExtensionRound}: 5 nieuwe beurten, score terug op 0.`);
+            updateCurrentScoreDisplay();
+            if (typeof updateSideScoreDisplays === 'function') updateSideScoreDisplays();
+            updateScoringPage();
+            return;
+        }
+    }
+
     state.matchEnded = true;
     state.currentMatch.completed = true;
     
