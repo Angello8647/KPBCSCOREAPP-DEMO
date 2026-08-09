@@ -56,8 +56,13 @@ function updateScoringPage() {
     let abbr = "??";
     let colorClass = "";
 
+    // ✅ NIEUW: Koning(in)sprijskamp krijgt een eigen kroontje-badge, vóór de
+    // andere disciplines gecheckt worden (Tornooi matcht anders geen van hen).
+    if (cat === 'heren' || cat === 'dames') {
+        abbr = "👑";
+        colorClass = "badge-vs";
     // ✅ FIX: Check "drie" EERST, want "Driebanden" bevat ook "band"
-    if (disc.includes("drie") || disc.includes("3")) {
+    } else if (disc.includes("drie") || disc.includes("3")) {
         abbr = "DB";
         colorClass = "badge-db";
     } else if (disc.includes("band")) {
@@ -71,11 +76,15 @@ function updateScoringPage() {
         abbr = "D";
         colorClass = "badge-dames";
     }
+    // (Koning(in)sprijskamp wordt al hierboven, als eerste, apart afgehandeld)
 
     // Update het HTML element met de nieuwe gekleurde box
     const badgeElement = document.getElementById('headerDisciplineBadge');
     if (badgeElement) {
-        badgeElement.innerHTML = `<span class="discipline-badge ${colorClass}">${abbr}-${cat}</span>`;
+        // ✅ Bij Koning(in)sprijskamp toont de badge enkel het kroontje, zonder
+        // "-heren"/"-dames" erachter — dat voegt niets toe naast het symbool zelf.
+        const badgeText = (cat === 'heren' || cat === 'dames') ? abbr : `${abbr}-${cat}`;
+        badgeElement.innerHTML = `<span class="discipline-badge ${colorClass}">${badgeText}</span>`;
     }
 
     // 2. Spelerkaarten & Beurtenlijst
