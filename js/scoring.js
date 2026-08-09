@@ -533,6 +533,19 @@ function endMatch() {
             state.currentMatch.p1MatchPoints = 2;
             state.currentMatch.p2MatchPoints = 2;
         }
+    } else if (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames') {
+        // ✅ NIEUW: KONING(IN)SPRIJSKAMP - winnaar via rendement (gespeeld
+        // gemiddelde ÷ eigen TSG), niet via ruwe score. Hergebruikt dezelfde
+        // formule als bij de vriendschappelijke fase-matchen.
+        const avg1 = state.player1.turns.length > 0 ? state.player1.score / state.player1.turns.length : 0;
+        const avg2 = state.player2.turns.length > 0 ? state.player2.score / state.player2.turns.length : 0;
+        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        const rendement1 = avg1 / tsg1;
+        const rendement2 = avg2 / tsg2;
+        console.log(`👑 Koningsprijskamp - Rendement Speler 1: ${(rendement1 * 100).toFixed(1)}% (${avg1.toFixed(3)}/${tsg1})`);
+        console.log(`👑 Koningsprijskamp - Rendement Speler 2: ${(rendement2 * 100).toFixed(1)}% (${avg2.toFixed(3)}/${tsg2})`);
+        state.currentMatch.winner = rendement1 >= rendement2 ? state.currentMatch.p1 : state.currentMatch.p2;
     } else {
         // ✅ HEREN: Oude logica (wie haalt target)
         state.currentMatch.winner = state.player1.score >= state.player1.target ? state.currentMatch.p1 : state.currentMatch.p2;
