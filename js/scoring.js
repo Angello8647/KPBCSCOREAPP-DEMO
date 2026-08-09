@@ -350,7 +350,11 @@ window.changeScore = function(delta) {
 
     // ✅ NIEUW: bij tornooi-matchen mag je binnen één beurt niet voorbij het target
     // klikken (bij de gewone competitie mag dat wel — daar blijft alles ongewijzigd).
-    if (state.currentMatch && state.currentMatch.discipline === 'Tornooi') {
+    // ✅ FIX: bij Koning(in)sprijskamp bestaat geen target (altijd 0, want de
+    // winnaar wordt via rendement bepaald, niet via een te bereiken doelscore) —
+    // die uitsluiten, anders blokkeert elke klik volledig (0 - 0 = geen ruimte).
+    const isKoningCatMatch = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
+    if (state.currentMatch && state.currentMatch.discipline === 'Tornooi' && !isKoningCatMatch) {
         const p = state.currentPlayer === 1 ? state.player1 : state.player2;
         const maxAllowed = Math.max(0, p.target - p.score);
         newInput = Math.min(newInput, maxAllowed);
