@@ -407,29 +407,41 @@ window.addScore = function() {
         }
     }
 
-    const reached = p.score >= t;
-
-    if (reached && state.firstToTarget === null) {
-        state.firstToTarget = state.currentPlayer;
-        if (state.currentPlayer === 1) { 
-            state.isNabeurt = true;
-            state.currentPlayer = 2; 
-            state.isFirstPlayerInRound = false;
-            state.currentInput = 0;
-            
-            updateCurrentScoreDisplay();
-            if (typeof updateSideScoreDisplays === 'function') updateSideScoreDisplays();
-            updateScoringPage();
-            return;
-        } else { 
+    // ✅ NIEUW: KONING(IN)SPRIJSKAMP - vaste 15 beurten per speler, geen target.
+    // Herkenbaar via .cat ('heren'/'dames') — komt enkel bij dit tornooitype voor.
+    // Winnaar wordt via rendement bepaald (zie endMatch()), dus we slaan de hele
+    // 'reached target'/nabeurt-logica hieronder volledig over.
+    const isKoningMatch = state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames';
+    if (isKoningMatch) {
+        if (state.player1.turns.length >= 15 && state.player2.turns.length >= 15) {
             endMatch();
             return;
         }
-    }
+    } else {
+        const reached = p.score >= t;
 
-    if (state.isNabeurt) {
-        endMatch();
-        return;
+        if (reached && state.firstToTarget === null) {
+            state.firstToTarget = state.currentPlayer;
+            if (state.currentPlayer === 1) { 
+                state.isNabeurt = true;
+                state.currentPlayer = 2; 
+                state.isFirstPlayerInRound = false;
+                state.currentInput = 0;
+                
+                updateCurrentScoreDisplay();
+                if (typeof updateSideScoreDisplays === 'function') updateSideScoreDisplays();
+                updateScoringPage();
+                return;
+            } else { 
+                endMatch();
+                return;
+            }
+        }
+
+        if (state.isNabeurt) {
+            endMatch();
+            return;
+        }
     }
 
     if (state.isFirstPlayerInRound) {
