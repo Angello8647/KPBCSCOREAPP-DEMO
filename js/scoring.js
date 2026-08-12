@@ -273,8 +273,23 @@ function updateCurrentScoreDisplay() {
     if (p1CurrentEl) p1CurrentEl.textContent = state.currentInput;
     if (p2CurrentEl) p2CurrentEl.textContent = state.currentInput;
 
-    const n1 = Math.max(0, state.player1.target - state.player1.score - (state.currentPlayer === 1 ? state.currentInput : 0));
-    const n2 = Math.max(0, state.player2.target - state.player2.score - (state.currentPlayer === 2 ? state.currentInput : 0));
+    // ✅ NIEUW: KONING(IN)SPRIJSKAMP heeft geen gedeeld target — hier tonen we
+    // in plaats daarvan hoeveel punten NODIG zijn om qua rendement (score÷TSG)
+    // voorbij de tegenstander te gaan. Formule: nodig = ⌊tegenscore × (eigen
+    // TSG ÷ tegen-TSG)⌋ + 1 (het "+1" om ECHT voorbij te gaan, niet enkel gelijk).
+    const isKoningMatchDisplay = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
+    let n1, n2;
+    if (isKoningMatchDisplay) {
+        const p1Score = state.player1.score + (state.currentPlayer === 1 ? state.currentInput : 0);
+        const p2Score = state.player2.score + (state.currentPlayer === 2 ? state.currentInput : 0);
+        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        n1 = Math.max(0, Math.floor(p2Score * (tsg1 / tsg2)) + 1 - p1Score);
+        n2 = Math.max(0, Math.floor(p1Score * (tsg2 / tsg1)) + 1 - p2Score);
+    } else {
+        n1 = Math.max(0, state.player1.target - state.player1.score - (state.currentPlayer === 1 ? state.currentInput : 0));
+        n2 = Math.max(0, state.player2.target - state.player2.score - (state.currentPlayer === 2 ? state.currentInput : 0));
+    }
     
     if (p1NeededEl) p1NeededEl.textContent = n1;
     if (p2NeededEl) p2NeededEl.textContent = n2;
@@ -298,8 +313,12 @@ function updateCurrentScoreDisplay() {
 
     if (p1NeededCell) p1NeededCell.classList.toggle('dimmed', state.currentPlayer !== 1);
     if (p2NeededCell) p2NeededCell.classList.toggle('dimmed', state.currentPlayer !== 2);
-    if (p1NeededCell) p1NeededCell.classList.toggle('danger', n1 <= 5 && n1 > 0);
-    if (p2NeededCell) p2NeededCell.classList.toggle('danger', n2 <= 5 && n2 > 0);
+    if (p1NeededCell) p1NeededCell.classList.toggle('danger', !isKoningMatchDisplay && n1 <= 5 && n1 > 0);
+    if (p2NeededCell) p2NeededCell.classList.toggle('danger', !isKoningMatchDisplay && n2 <= 5 && n2 > 0);
+    // ✅ NIEUW: bij Koning een eigen kleurtje (goud/amber, in lijn met de rest
+    // van het Koning-thema) i.p.v. het gewone rode "bijna klaar"-effect.
+    if (p1NeededCell) p1NeededCell.classList.toggle('koning-close', isKoningMatchDisplay && n1 <= 5 && n1 > 0);
+    if (p2NeededCell) p2NeededCell.classList.toggle('koning-close', isKoningMatchDisplay && n2 <= 5 && n2 > 0);
 
     // ✅ NIEUW: bij Dames bestaat er geen "te bereiken doel" (altijd vaste 20 beurten),
     // dus het groene aftelblok heeft daar geen betekenis en tonen we niet.
