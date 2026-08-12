@@ -1129,6 +1129,9 @@
 .needed-cell.dimmed { opacity: 0.4 !important; transform: scale(0.96) !important; filter: grayscale(0.3) !important; }
 .needed-cell.danger { border-color: #e74c3c !important; background: rgba(231, 76, 60, 0.15) !important; animation: danger-pulse 1.5s infinite; }
 .needed-cell.danger .cell-value { color: #e74c3c !important; }
+/* ✅ NIEUW: Koning(in)sprijskamp — goud/amber i.p.v. het gewone rood, past bij het Koning-thema elders in de app */
+.needed-cell.koning-close { border-color: #ca8a04 !important; background: rgba(202, 138, 4, 0.15) !important; animation: danger-pulse 1.5s infinite; }
+.needed-cell.koning-close .cell-value { color: #ca8a04 !important; }
 @keyframes danger-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); }
     50% { box-shadow: 0 0 25px 6px rgba(231,76,60,0.25); }
