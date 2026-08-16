@@ -2784,8 +2784,15 @@ window.updateFriendlyUI = function() {
     document.getElementById('friendlyHeaderName1').textContent = displayLeftName;
     document.getElementById('friendlyHeaderName2').textContent = displayRightName;
 
-    // ✅ CRUCIAAL: Bepaal de discipline op basis van het team dat NU aan de beurt is
-    const activePhase = ts.activeSide === 'left' ? ts.leftPhase : ts.rightPhase;
+    // ✅ FIX: bij een GEWONE 1-tegen-1 match (Vrijspel/Bandstoten/Driebanden,
+    // geen Triatlon/Dubbeltje) blijft ts.leftPhase/rightPhase altijd hardcoded
+    // op 'vrijspel' staan (dat veld is enkel bedoeld voor fase-overgangen bij
+    // Triatlon/Dubbeltje) — daardoor toonde de titel altijd "VRIJSPEL", ook bij
+    // een Driebanden-match. Gebruik voor gewone matches gewoon fm.gameType.
+    const isPhaseGameTitle = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const activePhase = isPhaseGameTitle
+        ? (ts.activeSide === 'left' ? ts.leftPhase : ts.rightPhase)
+        : fm.gameType;
     
     let phaseText = '';
     let phaseColor = '';
