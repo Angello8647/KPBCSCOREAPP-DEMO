@@ -3558,7 +3558,7 @@ window.updatePlayerTargetInfo = function(playerName) {
         infoDiv.classList.add('manual-input');
         
         let options = '<option value="0">-- Kies doel (0) --</option>';
-        for (let i = 5; i <= 100; i += 5) {
+        for (let i = 1; i <= 100; i += 1) {
             options += `<option value="${i}">${i}</option>`;
         }
 
