@@ -1335,9 +1335,14 @@ function renderMatchSummary() {
 
     const calcAvg = (score, turns) => (!turns || turns === 0) ? "0,00" : (score / turns).toFixed(2).replace('.', ',');
     
-    const getTSG = (playerName) => {
-        const player = state.players.find(p => p.name === playerName);
-        return player ? (player.tsg || player.fixedTSG || '−') : '−';
+    // ✅ FIX: niet opnieuw op NAAM zoeken (onveilig — dezelfde speler kan
+    // meerdere rijen hebben, bv. Vrijspel/Bandstoten/Driebanden, allemaal met
+    // dezelfde naam maar een andere TSG). state.player1/player2.fixedTSG is
+    // tijdens het starten van de match al correct, per club_id, toegewezen —
+    // gebruik die rechtstreeks, geen nieuwe opzoeking nodig.
+    const getTSG = (playerNum) => {
+        const p = playerNum === 1 ? state.player1 : state.player2;
+        return p && p.fixedTSG ? p.fixedTSG : '−';
     };
 
     const renderTurnsHorizontal = (turns) => {
@@ -1376,7 +1381,7 @@ function renderMatchSummary() {
     const p1Highest = state.player1.highestSeries;
     const p1Avg = calcAvg(p1Score, p1Turns);
     const p1Target = state.player1.target;
-    const p1TSG = getTSG(p1Name);
+    const p1TSG = getTSG(1);
 
     const p2Name = state.currentMatch.p2;
     const p2Score = state.player2.score;
@@ -1384,7 +1389,7 @@ function renderMatchSummary() {
     const p2Highest = state.player2.highestSeries;
     const p2Avg = calcAvg(p2Score, p2Turns);
     const p2Target = state.player2.target;
-    const p2TSG = getTSG(p2Name);
+    const p2TSG = getTSG(2);
 
     // ✅ NIEUW: Check of dit een vriendschappelijke match is
     const isFriendly = state.currentMatch.cat === 'Vriendschappelijk';
