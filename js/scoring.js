@@ -1533,23 +1533,40 @@ window.resetPage1State = function() {
 };
 
 // ✅ 2. HOVER LOGICA: Dim het andere vak ZODRA je over een knop gaat
-document.addEventListener("DOMContentLoaded", function() {
-    const btnOfficial = document.querySelector('#containerOfficial .next-btn');
-    const btnsFriendly = document.querySelectorAll('#containerFriendly .friendly-btn'); // ✅ Alle knoppen
+// ✅ NIEUW: herbruikbaar gemaakt, zodat dit ook bewaar wordt aangeroepen
+// zodra de presenter (afstandsbediening) een knop focust — niet enkel bij
+// een echte muis-hover. window.highlightPage1Button(el) doet dit voor de
+// gegeven knop; window.clearPage1Dim() zet alles weer terug normaal.
+window.highlightPage1Button = function(el) {
     const contOfficial = document.getElementById('containerOfficial');
     const contFriendly = document.getElementById('containerFriendly');
-
-    if (btnOfficial && contOfficial && contFriendly) {
-        // Hover over Officiële knop -> dim Vriendschappelijk vak
-        btnOfficial.addEventListener('mouseenter', () => contFriendly.classList.add('inactive-mode'));
-        btnOfficial.addEventListener('mouseleave', () => contFriendly.classList.remove('inactive-mode'));
-
-        // Hover over ELKE Vriendschappelijke knop -> dim Officieel vak
-        btnsFriendly.forEach(btn => {
-            btn.addEventListener('mouseenter', () => contOfficial.classList.add('inactive-mode'));
-            btn.addEventListener('mouseleave', () => contOfficial.classList.remove('inactive-mode'));
-        });
+    if (!el || !contOfficial || !contFriendly) return;
+    if (el.closest('#containerOfficial')) {
+        contFriendly.classList.add('inactive-mode');
+        contOfficial.classList.remove('inactive-mode');
+    } else if (el.closest('#containerFriendly')) {
+        contOfficial.classList.add('inactive-mode');
+        contFriendly.classList.remove('inactive-mode');
     }
+};
+window.clearPage1Dim = function() {
+    const contOfficial = document.getElementById('containerOfficial');
+    const contFriendly = document.getElementById('containerFriendly');
+    if (contOfficial) contOfficial.classList.remove('inactive-mode');
+    if (contFriendly) contFriendly.classList.remove('inactive-mode');
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+    const btnOfficial = document.querySelector('#containerOfficial .next-btn');
+    const btnsFriendly = document.querySelectorAll('#containerFriendly .friendly-btn');
+    if (btnOfficial) {
+        btnOfficial.addEventListener('mouseenter', () => window.highlightPage1Button(btnOfficial));
+        btnOfficial.addEventListener('mouseleave', () => window.clearPage1Dim());
+    }
+    btnsFriendly.forEach(btn => {
+        btn.addEventListener('mouseenter', () => window.highlightPage1Button(btn));
+        btn.addEventListener('mouseleave', () => window.clearPage1Dim());
+    });
 });
 
 // ✅ 3. KLIK LOGICA: Dim definitief en voer actie uit
