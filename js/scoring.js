@@ -1562,10 +1562,16 @@ document.addEventListener("DOMContentLoaded", function() {
     if (btnOfficial) {
         btnOfficial.addEventListener('mouseenter', () => window.highlightPage1Button(btnOfficial));
         btnOfficial.addEventListener('mouseleave', () => window.clearPage1Dim());
+        // ✅ NIEUW: ook bij ECHTE browserfocus (bv. via de presenter, die op
+        // pagina 1 gewoon .focus() gebruikt in plaats van een .focused-klasse)
+        btnOfficial.addEventListener('focus', () => window.highlightPage1Button(btnOfficial));
+        btnOfficial.addEventListener('blur', () => window.clearPage1Dim());
     }
     btnsFriendly.forEach(btn => {
         btn.addEventListener('mouseenter', () => window.highlightPage1Button(btn));
         btn.addEventListener('mouseleave', () => window.clearPage1Dim());
+        btn.addEventListener('focus', () => window.highlightPage1Button(btn));
+        btn.addEventListener('blur', () => window.clearPage1Dim());
     });
 });
 
