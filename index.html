@@ -949,7 +949,9 @@
     <div id="page20" class="page">
         <div class="header">
             <button class="back-btn" onclick="showPage(1)">← Terug</button>
-            
+            <!-- ✅ NIEUW: presenter-uitleg, op de plek waar vroeger de titel stond -->
+            <span style="font-size:1.15rem;font-weight:700;color:#e2e8f0;text-align:center;flex:1;">⬆️⬇️ discipline/categorie &nbsp;•&nbsp; ⬜ rangschikking/kruistabel &nbsp;•&nbsp; lang ⬆️ = hoofdmenu</span>
+
             <!-- NIEUWE HEADER CONTROLS -->
             <div class="comp-header-controls">
                 <select id="compDisc" onchange="updateCompCategories()" style="display:none;">
@@ -958,14 +960,10 @@
                 <select id="compCat" onchange="handleCategoryChange()" style="display:none;">
                     <option value="">Categorie...</option>
                 </select>
+                <div id="compCurrentLabel" style="font-size:1.3rem; font-weight:900; color:#fff; padding:0 15px; white-space:nowrap;">Laden...</div>
                 <button class="view-btn active" id="btnLeaderboard" onclick="switchCompView('leaderboard')">Rangschikking</button>
                 <button class="view-btn" id="btnCrossTable" onclick="switchCompView('crosstable')">Kruistabel</button>
             </div>
-        </div>
-        <!-- ✅ NIEUW: presenter-bediening + het klassement-label, samen op 1 regel -->
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 15px;background:#1e293b;color:#94a3b8;font-size:0.85rem;flex-wrap:wrap;gap:10px;">
-            <span>⬆️⬇️ discipline/categorie &nbsp;•&nbsp; ⬜ rangschikking/kruistabel &nbsp;•&nbsp; lang ⬆️ = hoofdmenu</span>
-            <div id="compCurrentLabel" style="font-size:1.5rem; font-weight:900; color:#fff; white-space:nowrap;">Laden...</div>
         </div>
         
         <!-- Container voor Rangschikking (standaard zichtbaar) -->
