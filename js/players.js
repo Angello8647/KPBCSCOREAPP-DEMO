@@ -28,13 +28,18 @@ async function fetchPlayersFromAPI() {
                     const clubId = parseInt(stat.club_id);
                     console.log(`✅ Speler: ${fullName} | Club ID: ${clubId} | Discipline: ${stat.discipline}`);
                     
+                    // ✅ FIX: "parseInt(stat.category) || 1" verving ten
+                    // onrechte een ECHTE categorie "0" (bij Dames) door 1 —
+                    // want in JavaScript is 0 || 1 altijd 1. Expliciet op NaN
+                    // checken behoudt de geldige waarde 0 correct.
+                    const parsedCat = parseInt(stat.category);
                     state.players.push({
                         id: clubId,
                         user_id: user.id,
                         name: fullName,
                         email: user.email || '',
                         discipline: stat.discipline || 'Vrijspel',
-                        category: parseInt(stat.category) || 1,
+                        category: isNaN(parsedCat) ? 1 : parsedCat,
                         target: parseInt(stat.target) || 50,
                         tsg: stat.tsg ? parseFloat(stat.tsg).toFixed(3).replace('.', ',') : '0,000',
                         pnt: parseInt(stat.target) || 50
