@@ -296,7 +296,9 @@ window.loadCrossTableCategory = function(category) {
 window.renderCrossTable = function() {
     currentCrossDiscipline = document.getElementById('compDisc').value;
     currentCrossCategory = parseInt(document.getElementById('compCat').value);
-    if (!currentCrossDiscipline || !currentCrossCategory) return;
+    // ✅ FIX: zelfde "!0 is altijd true"-valstrik als bij de rangschikking —
+    // expliciet op leeg/NaN checken, niet op "is het 0".
+    if (!currentCrossDiscipline || document.getElementById('compCat').value === '' || isNaN(currentCrossCategory)) return;
 
     const container = document.getElementById('crossTableContainer');
     // ✅ FIX: zelfde beveiliging als bij de rangschikking
@@ -327,7 +329,9 @@ window.renderCrossTable = function() {
     const playerStats = players.map(p => calculatePlayerStatsFromAPI(p.id, p.name, currentCrossDiscipline, currentCrossCategory, allMatches));
 
     // 3. Bouw de kruistabel
-    let html = `<div class="matches-list-title">📊 Kruistabel: ${currentCrossDiscipline} - Categorie ${currentCrossCategory}</div>`;
+    // ✅ NIEUW: bij Dames geen categorie tonen, consistent met de rangschikking.
+    const crossTitleSuffix = currentCrossDiscipline === 'Dames' ? '' : ` - Categorie ${currentCrossCategory}`;
+    let html = `<div class="matches-list-title">📊 Kruistabel: ${currentCrossDiscipline}${crossTitleSuffix}</div>`;
     html += `<div style="overflow-x: auto;"><table class="cross-table"><thead>`;
     
     // HEADER RIJ 1: Nummers + TOT
@@ -684,7 +688,12 @@ window.updateCompCurrentLabel = function() {
     if (!label) return;
     const disc = document.getElementById('compDisc').value;
     const cat = document.getElementById('compCat').value;
-    label.textContent = (disc && cat) ? `🏅 ${disc} • 📜 Categorie ${cat}` : 'Geen gegevens';
+    // ✅ NIEUW: bij Dames geen categorie tonen, consistent met de rest van de app.
+    if (disc === 'Dames') {
+        label.textContent = disc ? `🏅 ${disc}` : 'Geen gegevens';
+    } else {
+        label.textContent = (disc && cat) ? `🏅 ${disc} • 📜 Categorie ${cat}` : 'Geen gegevens';
+    }
 };
 
 /**
