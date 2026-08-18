@@ -33,7 +33,15 @@ function isOnPage1() {
 
 function startIdleCarousel() {
     if (idleCarouselActive) return;
+
+    // ✅ Bouw de combo-lijst opnieuw op (net zoals normaal gebeurt bij het
+    // bezoeken van pagina 20) — anders is de lijst mogelijk nog leeg als
+    // pagina 20 deze sessie nog nooit bezocht werd.
+    if (typeof window.buildCompComboList === 'function') {
+        window.buildCompComboList();
+    }
     if (!window.compComboList || window.compComboList.length === 0) return; // niets om te tonen
+
     idleCarouselActive = true;
     idleCarouselStep = 0;
     if (typeof window.showPage === 'function') window.showPage(20);
