@@ -186,7 +186,9 @@ window.loadLeaderboardCategory = function(category) {
 window.renderCompetitionLeaderboard = function() {
     currentCompDiscipline = document.getElementById('compDisc').value;
     currentCompCategory = parseInt(document.getElementById('compCat').value);
-    if (!currentCompDiscipline || !currentCompCategory) return;
+    // ✅ FIX: "!currentCompCategory" was ook waar bij categorie 0 (Dames) —
+    // in JavaScript is !0 altijd true. Expliciet op NaN/leeg checken.
+    if (!currentCompDiscipline || document.getElementById('compCat').value === '' || isNaN(currentCompCategory)) return;
 
     const container = document.getElementById('competitionLeaderboard');
     // ✅ FIX: filter matches zonder players-array weg (lokale matches hebben een ander
