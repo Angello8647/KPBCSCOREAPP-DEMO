@@ -215,7 +215,11 @@ window.renderCompetitionLeaderboard = function() {
     });
 
     // 4. Bouw de HTML tabel
-    let html = `<div class="matches-list-title">🏆 Klassement: ${currentCompDiscipline} - Categorie ${currentCompCategory}</div>`;
+        // ✅ NIEUW: bij Dames geen categorie tonen (consistent met de rest van de
+    // app) — "Categorie 0" voelt onbedoeld denigrerend aan, terwijl het
+    // gewoon de enige, ongedeelde groep is.
+    const titleSuffix = currentCompDiscipline === 'Dames' ? '' : ` - Categorie ${currentCompCategory}`;
+    let html = `<div class="matches-list-title">🏆 Klassement: ${currentCompDiscipline}${titleSuffix}</div>`;
     html += `<table class="competition-table">
         <thead>
             <tr>
