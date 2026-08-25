@@ -4,7 +4,7 @@ let selectedPlayerCategory = null;
 
 // --- API KOPPELING MET PLANNING APP ---
 async function fetchPlayersFromAPI() {
-    const apiUrl = "https://kpbcdemo.pythonanywhere.com/api/export/users";
+    const apiUrl = "https://kpbc.pythonanywhere.com/api/export/users";
     
     try {
         const playersList = document.getElementById('playersList');
@@ -317,7 +317,7 @@ function clearAllPlayers() {
  */
 window.fetchTournamentPlayersFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/tournament/export/users");
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/export/users");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const users = await response.json();
 
