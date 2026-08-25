@@ -1,6 +1,6 @@
 // js/matches.js
 async function fetchMatchesFromAPI() {
-    const apiUrl = "https://kpbcdemo.pythonanywhere.com/api/export/matches";
+    const apiUrl = "https://kpbc.pythonanywhere.com/api/export/matches";
     
     try {
         console.log("🎯 START SYNC. Geselecteerde datum in app:", state.selectedDate);
@@ -464,7 +464,7 @@ function createManualMatch() {
  */
 window.fetchTournamentMatchesFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/tournament/export/matches");
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/export/matches");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const apiMatches = await response.json();
 
