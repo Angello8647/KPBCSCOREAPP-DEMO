@@ -116,7 +116,7 @@ window.syncMatchToAPI = async function(match) {
     };
 
     // ⚠️ VERVANG DEZE URL MET DE ECHTE URL VAN DE ANDERE APP
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result"; 
+    const API_URL = "https://kpbcdemo.pythonanywhere.com/api/match-result"; 
 
     try {
         console.log("📤 Bezig met verzenden naar server...", payload);
@@ -176,7 +176,7 @@ window.syncPendingMatches = async function() {
     console.log(`🔄 Bezig met het synchroniseren van ${pending.length} achterstallige match(es)...`);
     
     // ⚠️ VERVANG DEZE URL MET DE ECHTE URL VAN DE ANDERE APP
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result";
+    const API_URL = "https://kpbcdemo.pythonanywhere.com/api/match-result";
 
     for (const payload of pending) {
         try {
