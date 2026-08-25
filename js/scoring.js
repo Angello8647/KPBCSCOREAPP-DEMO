@@ -8,7 +8,7 @@ async function updateMatchStatusOnServer(matchId, status) {
     try {
         console.log(`📡 Stuur signaal: Match ${matchId} is nu '${status}'`);
         
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/match-status", {
+        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/match-status", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -1821,7 +1821,7 @@ window.initFriendlyQRPage = async function() {
     qrSessionInfo.textContent = '';
     
     try {
-        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await fetch('https://kpbcdemo.pythonanywhere.com/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -1843,7 +1843,7 @@ window.initFriendlyQRPage = async function() {
         
         qrSessionInfo.textContent = `Sessie: ${qrSessionId.substring(0, 8)}... | Geldig tot: ${geldigTot}`;
         
-        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = `https://kpbcdemo.pythonanywhere.com/friendly-setup/${qrSessionId}`;
         qrDisplay.innerHTML = '<div id="qrcode"></div>';
         
         new QRCode(document.getElementById('qrcode'), {
@@ -4188,7 +4188,7 @@ window.openFriendlyQRPage = async function() {
     
     try {
         // 1. Maak nieuwe sessie aan op PythonAnywhere
-        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await fetch('https://kpbcdemo.pythonanywhere.com/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -4211,7 +4211,7 @@ window.openFriendlyQRPage = async function() {
         
         // 3. Genereer QR code
         console.log('🎯 Stap 3: QR code genereren...');
-        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = `https://kpbcdemo.pythonanywhere.com/friendly-setup/${qrSessionId}`;
         console.log('📱 QR URL:', qrUrl);
         
         const qrDisplay = document.getElementById('qrCodeDisplay');
@@ -4275,7 +4275,7 @@ function startQRPolling() {
         if (!qrSessionId) return;
         
         try {
-            const response = await fetch(`https://kpbc.pythonanywhere.com/api/friendly-setup/status/${qrSessionId}`);
+            const response = await fetch(`https://kpbcdemo.pythonanywhere.com/api/friendly-setup/status/${qrSessionId}`);
             const data = await response.json();
             
             if (data.status === 'completed') {
@@ -4420,7 +4420,7 @@ window.startDamesAvond = function() {
     renderDamesDigits();
 };
 window.showDamesSpelersKeuze = async function() {
-    const res = await fetch('https://kpbc.pythonanywhere.com/api/dames/spelers-en-paren');
+    const res = await fetch('https://kpbcdemo.pythonanywhere.com/api/dames/spelers-en-paren');
     const data = await res.json();
     const spelers = data.spelers;
     const gespeeldeParen = new Set(data.gespeelde_paren);
