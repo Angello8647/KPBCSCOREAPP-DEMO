@@ -8,7 +8,7 @@ async function updateMatchStatusOnServer(matchId, status) {
     try {
         console.log(`📡 Stuur signaal: Match ${matchId} is nu '${status}'`);
         
-        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/match-status", {
+        const response = await fetch("https://kpbc.pythonanywhere.com/api/match-status", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -923,9 +923,18 @@ function initPresenterControls() {
     const FRIENDLY_COOLDOWN = 1000;
     window.matchListFocusIndex = 0;
  
-    document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function(event) {
         const activePage = document.querySelector('.page.active');
         if (!activePage) return;
+
+        // ✅ VEILIGHEIDSFIX: enkel op pagina 5 (scoringsscherm) blokkeren we
+        // Escape/F5 — daar mag een lange druk NOOIT een browserherlaad
+        // veroorzaken (verlies van match-voortgang). Op andere pagina's
+        // (bv. pagina 6/20) is dit signaal net bewust gebruikt om "lang
+        // indrukken = naar hoofdmenu" te laten werken, dus daar niet blokkeren.
+        if (activePage.id === 'page5' && (event.key === 'F5' || event.key === 'Escape')) {
+            event.preventDefault();
+        }
  
  
  
@@ -1812,7 +1821,7 @@ window.initFriendlyQRPage = async function() {
     qrSessionInfo.textContent = '';
     
     try {
-        const response = await fetch('https://kpbcdemo.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -1834,7 +1843,7 @@ window.initFriendlyQRPage = async function() {
         
         qrSessionInfo.textContent = `Sessie: ${qrSessionId.substring(0, 8)}... | Geldig tot: ${geldigTot}`;
         
-        const qrUrl = `https://kpbcdemo.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
         qrDisplay.innerHTML = '<div id="qrcode"></div>';
         
         new QRCode(document.getElementById('qrcode'), {
@@ -2141,7 +2150,7 @@ window.finalizePlayerSelection = function(playerData) {
             }, 500);
         } else {
             setTimeout(() => {
-                console.log(`🎱 Ga naar Pagina 13 voor ${totalPlayers} spelers`);
+                console.log(`⚪🟡🔴 Ga naar Pagina 13 voor ${totalPlayers} spelers`);
                 window.prepareFriendlyBallSelection();
                 showPage(13);
             }, 500);
@@ -4179,7 +4188,7 @@ window.openFriendlyQRPage = async function() {
     
     try {
         // 1. Maak nieuwe sessie aan op PythonAnywhere
-        const response = await fetch('https://kpbcdemo.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -4202,7 +4211,7 @@ window.openFriendlyQRPage = async function() {
         
         // 3. Genereer QR code
         console.log('🎯 Stap 3: QR code genereren...');
-        const qrUrl = `https://kpbcdemo.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
         console.log('📱 QR URL:', qrUrl);
         
         const qrDisplay = document.getElementById('qrCodeDisplay');
@@ -4266,7 +4275,7 @@ function startQRPolling() {
         if (!qrSessionId) return;
         
         try {
-            const response = await fetch(`https://kpbcdemo.pythonanywhere.com/api/friendly-setup/status/${qrSessionId}`);
+            const response = await fetch(`https://kpbc.pythonanywhere.com/api/friendly-setup/status/${qrSessionId}`);
             const data = await response.json();
             
             if (data.status === 'completed') {
@@ -4355,3 +4364,167 @@ function toggleQRSection() {
         console.log('📱 QR sectie getoond (geen spelers)');
     }
 }
+
+
+// ==========================================
+// 🎀 DAMES-AVOND: live wedstrijd starten
+// ==========================================
+const DAMES_PIN = '8970';
+
+window.startDamesAvond = function() {
+    let pinInput = '';
+    const overlay = document.createElement('div');
+    overlay.id = 'damesPinOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(26,26,46,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;color:#fff;text-align:center;';
+    overlay.innerHTML = `
+        <div style="font-size:3rem;">🎀</div>
+        <h2 style="margin:0;">Dames-avond code</h2>
+        <div id="damesPinDisplay" style="font-size:2.2rem;letter-spacing:12px;font-weight:900;min-height:1.2em;"></div>
+        <div id="damesDigits" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px;"></div>
+        <div id="damesPinError" style="color:#e74c3c;font-weight:bold;min-height:1.5em;"></div>
+        <button onclick="document.getElementById('damesPinOverlay').remove()" style="background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Annuleren</button>
+    `;
+    document.body.appendChild(overlay);
+
+    let digitIdx = 0;
+    function renderDamesDigits() {
+        const container = document.getElementById('damesDigits');
+        container.innerHTML = '';
+        for (let d = 0; d <= 9; d++) {
+            const btn = document.createElement('button');
+            btn.textContent = d;
+            btn.style.cssText = 'width:50px;height:50px;font-size:1.3rem;font-weight:900;border-radius:10px;border:3px solid ' +
+                (d === digitIdx ? '#ec4899' : '#34495e') + ';background:' +
+                (d === digitIdx ? '#ec4899' : '#2c3e50') + ';color:#fff;cursor:pointer;';
+            btn.onclick = () => { digitIdx = d; addDamesDigit(); };
+            container.appendChild(btn);
+        }
+        document.getElementById('damesPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, DAMES_PIN.length - pinInput.length));
+    }
+
+    function addDamesDigit() {
+        pinInput += String(digitIdx);
+        document.getElementById('damesPinError').textContent = '';
+        if (pinInput.length >= DAMES_PIN.length) {
+            if (pinInput === DAMES_PIN) {
+                overlay.remove();
+                window.showDamesSpelersKeuze();
+            } else {
+                pinInput = '';
+                document.getElementById('damesPinError').textContent = '❌ Foute code';
+            }
+        }
+        renderDamesDigits();
+    }
+
+    renderDamesDigits();
+};
+window.showDamesSpelersKeuze = async function() {
+    const res = await fetch('https://kpbc.pythonanywhere.com/api/dames/spelers-en-paren');
+    const data = await res.json();
+    const spelers = data.spelers;
+    const gespeeldeParen = new Set(data.gespeelde_paren);
+
+    let gekozen = [];
+
+    const overlay = document.createElement('div');
+    overlay.id = 'damesKeuzeOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;padding:20px;color:#fff;overflow-y:auto;';
+    overlay.innerHTML = `
+        <h2 style="margin:10px 0;">🎀 Dames-avond — kies 2 speelsters</h2>
+        <div id="damesSpelersLijst" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;"></div>
+        <button id="damesStartBtn" disabled style="margin-top:20px;background:#22c55e;color:white;border:none;padding:14px 24px;border-radius:10px;font-weight:700;font-size:1.1rem;cursor:pointer;opacity:0.5;">▶️ Match starten</button>
+        <button onclick="document.getElementById('damesKeuzeOverlay').remove()" style="margin-top:10px;background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Annuleren</button>
+    `;
+    document.body.appendChild(overlay);
+
+    const lijstEl = document.getElementById('damesSpelersLijst');
+    spelers.forEach(s => {
+        const btn = document.createElement('button');
+        btn.textContent = s.name;
+        btn.dataset.clubId = s.club_id;
+        btn.style.cssText = 'padding:12px;border-radius:8px;border:2px solid #34495e;background:#2c3e50;color:#fff;font-weight:600;cursor:pointer;text-align:left;';
+        btn.onclick = () => toggleSpeler(s, btn);
+        lijstEl.appendChild(btn);
+    });
+
+    function heeftAlGespeeld(cid1, cid2) {
+        return gespeeldeParen.has(`${cid1}_${cid2}`);
+    }
+
+    function toggleSpeler(speler, btn) {
+        const idx = gekozen.findIndex(g => g.club_id === speler.club_id);
+        if (idx >= 0) {
+            gekozen.splice(idx, 1);
+            btn.style.background = '#2c3e50';
+            btn.style.borderColor = '#34495e';
+        } else {
+            if (gekozen.length >= 2) return;
+            gekozen.push(speler);
+            btn.style.background = '#ec4899';
+            btn.style.borderColor = '#ec4899';
+        }
+        updateStartKnop();
+    }
+
+    function updateStartKnop() {
+        const startBtn = document.getElementById('damesStartBtn');
+        const errorDiv = document.getElementById('damesKeuzeError');
+        if (errorDiv) errorDiv.remove();
+
+        if (gekozen.length === 2) {
+            const alGespeeld = heeftAlGespeeld(gekozen[0].club_id, gekozen[1].club_id);
+            if (alGespeeld) {
+                startBtn.disabled = true;
+                startBtn.style.opacity = '0.5';
+                const err = document.createElement('div');
+                err.id = 'damesKeuzeError';
+                err.textContent = '⚠️ Deze twee speelden al tegen elkaar!';
+                err.style.cssText = 'color:#f87171;font-weight:700;margin-top:10px;';
+                overlay.insertBefore(err, document.getElementById('damesStartBtn'));
+            } else {
+                startBtn.disabled = false;
+                startBtn.style.opacity = '1';
+            }
+        } else {
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.5';
+        }
+    }
+
+    document.getElementById('damesStartBtn').onclick = () => {
+        if (gekozen.length !== 2) return;
+        const [s1, s2] = gekozen;
+        const clubIds = [s1.club_id, s2.club_id].sort((a, b) => a - b);
+        const matchId = `${clubIds[0]}-${clubIds[1]}`;
+
+        state.currentMatch = {
+            id: matchId,
+            date: new Date().toISOString().split('T')[0],
+            time: '',
+            table: 1,
+            p1: s1.name,
+            p2: s2.name,
+            referee: null,
+            p1_club_id: parseInt(s1.club_id),
+            p2_club_id: parseInt(s2.club_id),
+            target1: 20,
+            target2: 20,
+            discipline: 'Dames',
+            cat: 0,
+            match_type: 'Regular',
+            completed: false,
+            whitePlayer: null,
+            p1Score: 0,
+            p2Score: 0,
+            p1Turns: [],
+            p2Turns: [],
+            p1Highest: 0,
+            p2Highest: 0,
+            synced_at: new Date().toISOString()
+        };
+        state.selectedWhitePlayer = null;
+        overlay.remove();
+        window.showPage(4);
+    };
+};
