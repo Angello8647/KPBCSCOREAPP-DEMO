@@ -7,7 +7,7 @@
  * Wordt gebruikt voor rangschikking en kruistabel
  */
 window.fetchMatchResultsFromAPI = async function() {
-    const apiUrl = "https://kpbc.pythonanywhere.com/api/match-results";
+    const apiUrl = "https://kpbcdemo.pythonanywhere.com/api/match-results";
     
     try {
         console.log("📊 Ophalen van alle gespeelde matches...");
@@ -94,7 +94,7 @@ window.syncMatchToAPI = async function(match) {
         ]
     };
 
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result";
+    const API_URL = "https://kpbcdemo.pythonanywhere.com/api/match-result";
 
     try {
         console.log("📤 Bezig met verzenden naar server...", payload);
@@ -151,7 +151,7 @@ window.syncPendingMatches = async function() {
 
     console.log(`🔄 Bezig met het synchroniseren van ${pending.length} achterstallige match(es)...`);
     
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result";
+    const API_URL = "https://kpbcdemo.pythonanywhere.com/api/match-result";
 
     for (const payload of pending) {
         try {
@@ -197,7 +197,7 @@ window.addEventListener('online', () => {
  */
 window.restoreCompletedMatchesFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/match-results");
+        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/match-results");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const results = await response.json();
 
@@ -291,7 +291,7 @@ window.syncTournamentMatchToAPI = async function(match) {
     };
 
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/tournament/match-result", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -334,7 +334,7 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
     };
     console.log("🔍 DEBUG - Dit zouden we normaal naar de server sturen:", JSON.stringify(payload, null, 2));
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/tournament/match-result", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -360,7 +360,7 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
  */
 window.restoreTournamentMatchesFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-results");
+        const response = await fetch("https://kpbcdemo.pythonanywhere.com/api/tournament/match-results");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const results = await response.json();
 
