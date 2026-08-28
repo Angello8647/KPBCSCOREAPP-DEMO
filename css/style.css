@@ -647,9 +647,9 @@
             background: #2ecc71;
             color: white;
             border: none;
-            padding: 20px 50px;
+            padding: 26px 60px;
             border-radius: 8px;
-            font-size: 24px;
+            font-size: 30px;
             cursor: pointer;
             margin-top: 20px;
         }
@@ -1939,8 +1939,8 @@
     margin: 0 auto !important;
     display: block !important;
     transition: all 0.2s ease !important;
-    padding: 20px 50px !important;
-    font-size: 24px !important;
+    padding: 26px 60px !important;
+    font-size: 30px !important;
 }
 
 .friendly-btn:hover {
