@@ -4373,6 +4373,7 @@ const DAMES_PIN = '8970';
 
 window.startDamesAvond = function() {
     let pinInput = '';
+    let damesDigitIndex = 0;
     const overlay = document.createElement('div');
     overlay.id = 'damesPinOverlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(26,26,46,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;color:#fff;text-align:center;';
@@ -4401,6 +4402,26 @@ window.startDamesAvond = function() {
         }
         document.getElementById('damesPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, DAMES_PIN.length - pinInput.length));
     }
+
+    function damesKeydownHandler(e) {
+        if (!document.getElementById('damesPinOverlay')) return;
+        if (e.key === 'PageUp' || e.key === 'ArrowUp') {
+            e.preventDefault(); e.stopImmediatePropagation();
+            damesDigitIndex = (damesDigitIndex + 1) % 10;
+            digitIdx = damesDigitIndex;
+            renderDamesDigits();
+        } else if (e.key === 'PageDown' || e.key === 'ArrowDown') {
+            e.preventDefault(); e.stopImmediatePropagation();
+            damesDigitIndex = (damesDigitIndex - 1 + 10) % 10;
+            digitIdx = damesDigitIndex;
+            renderDamesDigits();
+        } else if (e.key === 'Tab') {
+            e.preventDefault(); e.stopImmediatePropagation();
+            digitIdx = damesDigitIndex;
+            addDamesDigit();
+        }
+    }
+    document.addEventListener('keydown', damesKeydownHandler, true);
 
     function addDamesDigit() {
         pinInput += String(digitIdx);
