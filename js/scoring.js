@@ -4429,6 +4429,7 @@ window.startDamesAvond = function() {
         if (pinInput.length >= DAMES_PIN.length) {
             if (pinInput === DAMES_PIN) {
                 overlay.remove();
+                document.removeEventListener('keydown', damesKeydownHandler, true);
                 window.showDamesSpelersKeuze();
             } else {
                 pinInput = '';
