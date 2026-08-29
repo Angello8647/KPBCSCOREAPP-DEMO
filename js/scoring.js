@@ -1268,7 +1268,9 @@ document.addEventListener('keydown', function(event) {
             }
             if (event.key === 'b' || event.key === 'B' || event.code === 'KeyB') {
                 event.preventDefault();
+                console.log('🔍 VOOR smartUndo — currentInput:', state.currentInput, 'lastStateBeforeAdd bestaat:', !!window.lastStateBeforeAdd);
                 if (typeof window.smartUndo === 'function') window.smartUndo();
+                console.log('🔍 NA smartUndo — currentInput:', state.currentInput, 'lastStateBeforeAdd bestaat:', !!window.lastStateBeforeAdd);
                 lastScoreTime = now;
                 return;
             }
