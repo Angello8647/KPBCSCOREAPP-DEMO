@@ -1268,7 +1268,7 @@ document.addEventListener('keydown', function(event) {
             }
             if (event.key === 'b' || event.key === 'B' || event.code === 'KeyB') {
                 event.preventDefault();
-                if (typeof window.undoLastAdd === 'function') window.undoLastAdd();
+                if (typeof window.smartUndo === 'function') window.smartUndo();
                 lastScoreTime = now;
                 return;
             }
@@ -4600,3 +4600,14 @@ window.showDamesSpelersKeuze = async function() {
         window.showPage(4);
     };
 };
+
+window.smartUndo = function() {
+    if (state.currentInput > 0) {
+        // ✅ Er staat nog een niet-bevestigd cijfer: gewoon 1 punt aftrekken
+        window.changeScore(-1);
+    } else {
+        // ✅ Niets in te typen meer: ga terug naar de vorige, bevestigde beurt
+        if (typeof window.undoLastAdd === 'function') window.undoLastAdd();
+    }
+};
+
