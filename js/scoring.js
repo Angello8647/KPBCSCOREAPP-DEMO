@@ -4353,10 +4353,20 @@ function startMatchFromQRData(data) {
     
     // Zet spelers om naar het juiste formaat
     data.players.forEach((player, index) => {
+        // ✅ FIX: de echte TSG ophalen via club_id (niet naam!), in plaats van
+        // hardcoded op 0 te laten staan — dit was de oorzaak van "verkeerde
+        // discipline se TSG" bij vriendschappelijke matchen via QR-code.
+        let echteTsg = 0;
+        if (!player.isGuest && player.club_id) {
+            const gevonden = state.players.find(p => String(p.id) === String(player.club_id));
+            if (gevonden && gevonden.tsg) {
+                echteTsg = parseFloat(String(gevonden.tsg).replace(',', '.')) || 0;
+            }
+        }
         state.friendlyMatch.players[index + 1] = {
             name: player.name,
             target: player.target || 20,
-            average: 0,
+            average: echteTsg,
             isGuest: player.isGuest || false
         };
     });
