@@ -4339,6 +4339,7 @@ function startQRPolling() {
  */
 function startMatchFromQRData(data) {
     console.log('🚀 Start match met QR data:', data);
+    console.log('🔍 DEBUG data.players:', JSON.stringify(data.players, null, 2));
     
     // Zet de data om naar het formaat dat de score app verwacht
     state.friendlyMatch = {
