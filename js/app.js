@@ -102,6 +102,8 @@ function herstelOnderbrokenMatch(backup) {
     state.player2.highestSeries = backup.p2Highest || 0;
     state.currentPlayer = backup.currentPlayer;
     state.isNabeurt = backup.isNabeurt;
+    state.isFirstPlayerInRound = backup.isFirstPlayerInRound;
+    state.turnNumber = backup.turnNumber || 1;
     state.firstToTarget = backup.firstToTarget;
     state.matchEnded = false;
     state.currentInput = 0;
