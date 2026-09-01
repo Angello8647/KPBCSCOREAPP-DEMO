@@ -522,6 +522,7 @@ window.addScore = function() {
             p1Turns: [...state.player1.turns], p2Turns: [...state.player2.turns],
             p1Target: state.player1.target, p2Target: state.player2.target,
             p1Highest: state.player1.highestSeries, p2Highest: state.player2.highestSeries,
+            p1BeurtNummer: state.player1.beurtNummer, p2BeurtNummer: state.player2.beurtNummer,
             currentPlayer: state.currentPlayer, isNabeurt: state.isNabeurt,
             isFirstPlayerInRound: state.isFirstPlayerInRound, turnNumber: state.turnNumber,
             firstToTarget: state.firstToTarget, completed: state.matchEnded
