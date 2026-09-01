@@ -108,7 +108,7 @@ function herstelOnderbrokenMatch(backup) {
     state.turnNumber = backup.turnNumber || 1;
     state.firstToTarget = backup.firstToTarget;
     state.matchEnded = false;
-    state.currentInput = 0;
+    state.currentInput = backup.currentInput || 0;
 
     if (typeof window.showPage === 'function') window.showPage(5);
     if (typeof updateCurrentScoreDisplay === 'function') updateCurrentScoreDisplay();
