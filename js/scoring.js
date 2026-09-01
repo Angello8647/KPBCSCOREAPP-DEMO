@@ -520,6 +520,8 @@ window.addScore = function() {
             matchId: state.currentMatch.id, player1: state.currentMatch.p1, player2: state.currentMatch.p2,
             date: state.currentMatch.date, p1Score: state.player1.score, p2Score: state.player2.score,
             p1Turns: [...state.player1.turns], p2Turns: [...state.player2.turns],
+            p1Target: state.player1.target, p2Target: state.player2.target,
+            p1Highest: state.player1.highestSeries, p2Highest: state.player2.highestSeries,
             currentPlayer: state.currentPlayer, isNabeurt: state.isNabeurt,
             firstToTarget: state.firstToTarget, completed: state.matchEnded
         });
