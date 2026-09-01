@@ -96,10 +96,12 @@ function herstelOnderbrokenMatch(backup) {
     state.player1.turns = backup.p1Turns || [];
     state.player1.target = backup.p1Target || match.target1;
     state.player1.highestSeries = backup.p1Highest || 0;
+    state.player1.beurtNummer = backup.p1BeurtNummer || 1;
     state.player2.score = backup.p2Score;
     state.player2.turns = backup.p2Turns || [];
     state.player2.target = backup.p2Target || match.target2;
     state.player2.highestSeries = backup.p2Highest || 0;
+    state.player2.beurtNummer = backup.p2BeurtNummer || 1;
     state.currentPlayer = backup.currentPlayer;
     state.isNabeurt = backup.isNabeurt;
     state.isFirstPlayerInRound = backup.isFirstPlayerInRound;
