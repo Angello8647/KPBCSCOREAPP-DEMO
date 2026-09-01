@@ -399,12 +399,33 @@ window.changeScore = function(delta) {
     state.currentInput = newInput;
     
     // ✅ HIER ROEPEN WE DE SPRAAKFUNCTIE AAN ALS ER PUNTEN BIJ KOMEN (+)
-    if (delta > 0) {
-        playScoreSound(state.currentInput);
-    }
+    // ✅ UITGESCHAKELD voor vanavond (veiligheid/eenvoud) - Commentaar terug
+    // verwijderen om spraak te activeren
+    // if (delta > 0) {
+    //     playScoreSound(state.currentInput);
+    // }
     
     updateCurrentScoreDisplay();
 }
+
+// ==========================================
+// 💾 TUSSENTIJDSE BACKUP (bij elke beurt), voorkomt volledig gegevensverlies
+// bij een onderbreking (stroomuitval, harde herlaad, enz.) tijdens een match.
+// ==========================================
+function backupMatchSilently(data) {
+    try {
+        localStorage.setItem('kpbc_match_backup', JSON.stringify({...data, savedAt: Date.now()}));
+    } catch (e) {
+        console.error('Backup mislukt:', e);
+    }
+}
+
+function clearMatchBackup() {
+    localStorage.removeItem('kpbc_match_backup');
+}
+
+
+
 
 window.addScore = function() {
     if (state.matchEnded) return;
