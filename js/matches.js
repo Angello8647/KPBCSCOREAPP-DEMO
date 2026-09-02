@@ -240,6 +240,11 @@ window.selectMatch = function(id) {
         return;
     }
     
+    // ✅ NIEUW: een NIEUWE match starten wist ook altijd de eventueel nog
+    // aanwezige backup van een vorige match — extra zekerheid, zodat de
+    // "onderbroken match"-melding nooit per ongeluk blijft hangen.
+    if (typeof clearMatchBackup === 'function') clearMatchBackup();
+
     // Stel de match in
     state.currentMatch = match;
     state.selectedWhitePlayer = null;
