@@ -4732,13 +4732,4 @@ window.showDamesSpelersKeuze = async function() {
     };
 };
 
-window.smartUndo = function() {
-    if (state.currentInput > 0) {
-        // ✅ Er staat nog een niet-bevestigd cijfer: gewoon 1 punt aftrekken
-        window.changeScore(-1);
-    } else {
-        // ✅ Niets in te typen meer: ga terug naar de vorige, bevestigde beurt
-        if (typeof window.undoLastAdd === 'function') window.undoLastAdd();
-    }
-};
 
