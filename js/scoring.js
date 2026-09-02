@@ -4547,7 +4547,7 @@ window.showDamesSpelersKeuze = async function() {
         <h2 style="margin:10px 0;">🎀 Dames-avond — kies 2 speelsters</h2>
         <div id="damesSpelersLijst" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;"></div>
         <button id="damesStartBtn" disabled style="margin-top:20px;background:#22c55e;color:white;border:none;padding:14px 24px;border-radius:10px;font-weight:700;font-size:1.1rem;cursor:pointer;opacity:0.5;">▶️ Match starten</button>
-    <button onclick="document.getElementById('damesKeuzeOverlay').remove(); document.removeEventListener('keydown', damesKeuzeKeydownHandler, true);" style="margin-top:10px;background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Annuleren</button>
+    <button id="damesAnnuleerBtn" onclick="document.getElementById('damesKeuzeOverlay').remove(); document.removeEventListener('keydown', damesKeuzeKeydownHandler, true);" style="margin-top:10px;background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Annuleren</button>
     `;
     document.body.appendChild(overlay);
 
@@ -4572,11 +4572,14 @@ window.showDamesSpelersKeuze = async function() {
             b.style.outline = (i === damesFocusIndex) ? '3px solid #ec4899' : 'none';
         });
         const startBtn = document.getElementById('damesStartBtn');
+        const annuleerBtn = document.getElementById('damesAnnuleerBtn');
         startBtn.style.outline = (damesFocusIndex === damesButtons.length) ? '3px solid #ec4899' : 'none';
+        if (annuleerBtn) annuleerBtn.style.outline = (damesFocusIndex === damesButtons.length + 1) ? '3px solid #ec4899' : 'none';
     }
     function damesKeuzeKeydownHandler(e) {
         if (!document.getElementById('damesKeuzeOverlay')) return;
-        const maxIndex = damesButtons.length; // laatste positie = de "Match starten"-knop
+        // ✅ NIEUW: navigatie omvat nu ook de "Annuleren"-knop (1 extra positie)
+        const maxIndex = damesButtons.length + 1;
         if (e.key === 'PageDown' || e.key === 'ArrowDown') {
             e.preventDefault(); e.stopImmediatePropagation();
             damesFocusIndex = Math.min(damesFocusIndex + 1, maxIndex);
@@ -4587,8 +4590,10 @@ window.showDamesSpelersKeuze = async function() {
             updateDamesFocusStyle();
         } else if (e.key === 'Tab') {
             e.preventDefault(); e.stopImmediatePropagation();
-            if (damesFocusIndex === maxIndex) {
+            if (damesFocusIndex === damesButtons.length) {
                 document.getElementById('damesStartBtn').click();
+            } else if (damesFocusIndex === damesButtons.length + 1) {
+                document.getElementById('damesAnnuleerBtn').click();
             } else {
                 damesButtons[damesFocusIndex].click();
             }
