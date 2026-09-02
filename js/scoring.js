@@ -620,7 +620,12 @@ function endMatch() {
 
     state.matchEnded = true;
     state.currentMatch.completed = true;
-    
+
+    // ✅ NIEUW: match is nu écht, definitief afgerond — de tussentijdse
+    // backup is niet meer nodig, en moet weg zodat de "onderbroken match
+    // gevonden"-melding niet onterecht verschijnt bij de VOLGENDE match.
+    if (typeof clearMatchBackup === 'function') clearMatchBackup();
+
     // ✅ STUUR SIGNAAL NAAR SERVER DAT MATCH GESPEELD IS
     updateMatchStatusOnServer(state.currentMatch.id, "voltooid");
     
