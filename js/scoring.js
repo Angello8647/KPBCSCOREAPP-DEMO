@@ -1359,6 +1359,13 @@ document.addEventListener('keydown', function(event) {
             } else if (event.key === 'Tab') {
                 event.preventDefault();
                 if (typeof window.startMatch === 'function' && state.selectedWhitePlayer) window.startMatch();
+            } else if (event.key === 'b' || event.key === 'B' || event.code === 'KeyB') {
+                // ✅ NIEUW: timer starten, om bij loslaten te bepalen of dit
+                // kort ("Terug") of lang ("Hoofdmenu") ingedrukt werd.
+                event.preventDefault();
+                if (bStartTimePagina4 === null) {
+                    bStartTimePagina4 = Date.now();
+                }
             }
             return;
         }
