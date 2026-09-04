@@ -1010,6 +1010,7 @@ function navigateFocusableList(event, items, indexRef, options = {}) {
  
 function initPresenterControls() {
     let pageUpStartTime = null;
+    let bStartTimePagina4 = null;
     let lastScoreTime = 0;
     const COOLDOWN = 1000;
     let lastTabTime = 0;
