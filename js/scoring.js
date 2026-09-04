@@ -1010,7 +1010,6 @@ function navigateFocusableList(event, items, indexRef, options = {}) {
  
 function initPresenterControls() {
     let pageUpStartTime = null;
-    let bStartTimePagina4 = null;
     let lastScoreTime = 0;
     const COOLDOWN = 1000;
     let lastTabTime = 0;
@@ -1350,24 +1349,25 @@ document.addEventListener('keydown', function(event) {
  
         // ✅ PAGINA 4: Witte bal kiezen + match starten
         // FIX: gebruikte voorheen een niet-bestaande variabele `key` i.p.v. `event.key`
+        // ✅ NIEUW: volledige navigatie i.p.v. directe PageUp/PageDown-acties
+        // — veiliger, want een te lange druk verplaatst enkel de zichtbare
+        // markering, en activeert nooit per ongeluk iets (dat gebeurt enkel
+        // bij een expliciete Tab-druk).
         if (activePage.id === 'page4') {
-            if (event.key === 'PageUp' || event.key === 'ArrowUp') {
-                event.preventDefault();
-                if (typeof window.selectWhitePlayer === 'function') window.selectWhitePlayer(1);
-            } else if (event.key === 'PageDown' || event.key === 'ArrowDown') {
-                event.preventDefault();
-                if (typeof window.selectWhitePlayer === 'function') window.selectWhitePlayer(2);
-            } else if (event.key === 'Tab') {
-                event.preventDefault();
-                if (typeof window.startMatch === 'function' && state.selectedWhitePlayer) window.startMatch();
-            } else if (event.key === 'b' || event.key === 'B' || event.code === 'KeyB') {
-                // ✅ NIEUW: timer starten, om bij loslaten te bepalen of dit
-                // kort ("Terug") of lang ("Hoofdmenu") ingedrukt werd.
-                event.preventDefault();
-                if (bStartTimePagina4 === null) {
-                    bStartTimePagina4 = Date.now();
+            const ballOptions = Array.from(document.querySelectorAll('#page4 .ball-option'));
+            const startBtn = document.getElementById('startMatchBtn');
+            const backBtn = document.querySelector('#page4 .back-btn');
+            const homeBtn = document.querySelector('#page4 .home-btn');
+            const focusables = [...ballOptions, startBtn, backBtn, homeBtn].filter(el => el);
+
+            if (focusables.length === 0) return;
+            focusables.forEach(el => el.classList.remove('focused'));
+
+            navigateFocusableList(event, focusables, windowIndexRef('page4FocusIndex'), {
+                highlight: (items, idx) => {
+                    items[idx].classList.add('focused');
                 }
-            }
+            });
             return;
         }
  
@@ -1428,23 +1428,7 @@ document.addEventListener('keydown', function(event) {
         const activePage = document.querySelector('.page.active');
         if (!activePage) return;
 
-        // ✅ PAGINA 4: kort "b" = Terug, lang "b" (≥1.5s) = Hoofdmenu
-        if (activePage.id === 'page4' && (event.key === 'b' || event.key === 'B' || event.code === 'KeyB')) {
-            event.preventDefault();
-            if (bStartTimePagina4 === null) return;
-            const holdDuration = Date.now() - bStartTimePagina4;
-            bStartTimePagina4 = null;
 
-            if (holdDuration >= 1500) {
-                const homeBtn = document.querySelector('#page4 .home-btn');
-                if (homeBtn) homeBtn.click();
-            } else {
-                const backBtn = document.querySelector('#page4 .back-btn');
-                if (backBtn) backBtn.click();
-            }
-            return;
-        }
- 
         // ✅ PAGINA 20: kort PageUp = vorige combinatie, lang ingedrukt (≥2s) = terug naar hoofdmenu
         if (activePage.id === 'page20') {
             if (event.key === 'PageUp' || event.key === 'ArrowUp') {
