@@ -1222,10 +1222,21 @@ document.addEventListener('keydown', function(event) {
         // ✅ PAGINA 2 OF 11: Door matchen navigeren + selecteren
         if (activePage.id === 'page2' || activePage.id === 'page11') {
             const cards = Array.from(document.querySelectorAll('#matchList .match-card'));
-            if (cards.length > 0) {
-                window.matchListFocusIndex = Math.max(0, Math.min(window.matchListFocusIndex, cards.length - 1));
-                navigateFocusableList(event, cards, windowIndexRef('matchListFocusIndex'), {
-                    highlight: (items) => window.highlightMatch(items),
+            const backBtn = document.querySelector(`#${activePage.id} .back-btn`);
+            const focusables = backBtn ? [...cards, backBtn] : cards;
+        
+            if (focusables.length > 0) {
+                window.matchListFocusIndex = Math.max(0, Math.min(window.matchListFocusIndex, focusables.length - 1));
+                navigateFocusableList(event, focusables, windowIndexRef('matchListFocusIndex'), {
+                    highlight: (items, idx) => {
+                        cards.forEach(c => c.classList.remove('focused'));
+                        if (backBtn) backBtn.style.outline = 'none';
+                        if (idx < cards.length) {
+                            window.highlightMatch(cards.slice(0, idx + 1));
+                        } else if (backBtn) {
+                            backBtn.style.outline = '3px solid #00d2d3';
+                        }
+                    },
                     wrap: false
                 });
             }
