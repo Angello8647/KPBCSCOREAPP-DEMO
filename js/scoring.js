@@ -1232,7 +1232,8 @@ document.addEventListener('keydown', function(event) {
                         cards.forEach(c => c.classList.remove('focused'));
                         if (backBtn) backBtn.style.outline = 'none';
                         if (idx < cards.length) {
-                            window.highlightMatch(cards.slice(0, idx + 1));
+                            cards[idx].classList.add('focused');
+                            cards[idx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                         } else if (backBtn) {
                             backBtn.style.outline = '3px solid #00d2d3';
                         }
