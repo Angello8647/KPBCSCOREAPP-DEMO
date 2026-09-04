@@ -1354,21 +1354,30 @@ document.addEventListener('keydown', function(event) {
         // markering, en activeert nooit per ongeluk iets (dat gebeurt enkel
         // bij een expliciete Tab-druk).
         if (activePage.id === 'page4') {
-            // ✅ NIEUW: Tab activeert ALTIJD "Start Match" (als er al een
-            // geldige bal-keuze is), ongeacht waar de navigatie-markering
-            // net staat — net zoals voorheen.
-            if (event.key === 'Tab') {
-                event.preventDefault();
-                if (typeof window.startMatch === 'function' && state.selectedWhitePlayer) window.startMatch();
-                return;
-            }
-
             const ballOptions = Array.from(document.querySelectorAll('#page4 .ball-option'));
             const backBtn = document.querySelector('#page4 .back-btn');
             const homeBtn = document.querySelector('#page4 .home-btn');
             const focusables = [...ballOptions, backBtn, homeBtn].filter(el => el);
 
             if (focusables.length === 0) return;
+
+            // ✅ NIEUW: Tab is nu CONTEXT-AFHANKELIJK — kijkt wat er op dat
+            // moment gemarkeerd is, en handelt daarnaar (start de match ENKEL
+            // als een bal-optie gemarkeerd is, klik anders gewoon de knop).
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                const huidigeIdx = window.page4FocusIndex || 0;
+                const gemarkeerd = focusables[huidigeIdx];
+                if (gemarkeerd === backBtn) {
+                    backBtn.click();
+                } else if (gemarkeerd === homeBtn) {
+                    homeBtn.click();
+                } else {
+                    if (typeof window.startMatch === 'function' && state.selectedWhitePlayer) window.startMatch();
+                }
+                return;
+            }
+
             focusables.forEach(el => el.classList.remove('focused'));
 
             navigateFocusableList(event, focusables, windowIndexRef('page4FocusIndex'), {
