@@ -1039,7 +1039,11 @@ document.addEventListener('keydown', function(event) {
             if (state.currentMatch && !state.matchEnded) {
                 const p1T = state.player1.turns?.length || 0;
                 const p2T = state.player2.turns?.length || 0;
-                if (p1T === 0 && p2T === 0) {
+                // ✅ FIX: ook checken of er al een niet-bevestigd cijfer
+                // staat (state.currentInput) — zodra er al iets ingetikt is,
+                // mag annuleren niet meer, ook al is er nog geen bevestigde
+                // beurt.
+                if (p1T === 0 && p2T === 0 && state.currentInput === 0) {
                     if (typeof window.showPage === 'function') window.showPage(1);
                 }
             }
