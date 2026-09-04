@@ -1223,7 +1223,10 @@ document.addEventListener('keydown', function(event) {
         if (activePage.id === 'page2' || activePage.id === 'page11') {
             const cards = Array.from(document.querySelectorAll('#matchList .match-card'));
             const backBtn = document.querySelector(`#${activePage.id} .back-btn`);
-            const focusables = backBtn ? [...cards, backBtn] : cards;
+            // ✅ NIEUW: "Terug"-knop staat nu VOORAAN in de navigatielijst (positie 0),
+            // zodat je hem zowel via PageUp (vóór de eerste match) als via PageDown
+            // (na de laatste, met wrap terug naar het begin) natuurlijk bereikt.
+            const focusables = backBtn ? [backBtn, ...cards] : cards;
         
             if (focusables.length > 0) {
                 window.matchListFocusIndex = Math.max(0, Math.min(window.matchListFocusIndex, focusables.length - 1));
@@ -1231,14 +1234,14 @@ document.addEventListener('keydown', function(event) {
                     highlight: (items, idx) => {
                         cards.forEach(c => c.classList.remove('focused'));
                         if (backBtn) backBtn.style.outline = 'none';
-                        if (idx < cards.length) {
-                            cards[idx].classList.add('focused');
-                            cards[idx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                        } else if (backBtn) {
-                            backBtn.style.outline = '3px solid #00d2d3';
+                        if (idx === 0) {
+                            if (backBtn) backBtn.style.outline = '3px solid #00d2d3';
+                        } else {
+                            cards[idx - 1].classList.add('focused');
+                            cards[idx - 1].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                         }
                     },
-                    wrap: false
+                    wrap: true
                 });
             }
             return;
