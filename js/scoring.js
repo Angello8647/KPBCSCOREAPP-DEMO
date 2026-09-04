@@ -1366,6 +1366,14 @@ document.addEventListener('keydown', function(event) {
             navigateFocusableList(event, focusables, windowIndexRef('page4FocusIndex'), {
                 highlight: (items, idx) => {
                     items[idx].classList.add('focused');
+                    // ✅ NIEUW: bij het navigeren naar een bal-optie, meteen
+                    // ook de kleur laten zien (net als voorheen), niet pas
+                    // wachten tot Tab.
+                    if (idx === 0 && typeof window.selectWhitePlayer === 'function') {
+                        window.selectWhitePlayer(1);
+                    } else if (idx === 1 && typeof window.selectWhitePlayer === 'function') {
+                        window.selectWhitePlayer(2);
+                    }
                 }
             });
             return;
