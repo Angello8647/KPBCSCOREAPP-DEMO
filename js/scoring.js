@@ -1427,6 +1427,23 @@ document.addEventListener('keydown', function(event) {
     document.addEventListener('keyup', function(event) {
         const activePage = document.querySelector('.page.active');
         if (!activePage) return;
+
+        // ✅ PAGINA 4: kort "b" = Terug, lang "b" (≥1.5s) = Hoofdmenu
+        if (activePage.id === 'page4' && (event.key === 'b' || event.key === 'B' || event.code === 'KeyB')) {
+            event.preventDefault();
+            if (bStartTimePagina4 === null) return;
+            const holdDuration = Date.now() - bStartTimePagina4;
+            bStartTimePagina4 = null;
+
+            if (holdDuration >= 1500) {
+                const homeBtn = document.querySelector('#page4 .home-btn');
+                if (homeBtn) homeBtn.click();
+            } else {
+                const backBtn = document.querySelector('#page4 .back-btn');
+                if (backBtn) backBtn.click();
+            }
+            return;
+        }
  
         // ✅ PAGINA 20: kort PageUp = vorige combinatie, lang ingedrukt (≥2s) = terug naar hoofdmenu
         if (activePage.id === 'page20') {
