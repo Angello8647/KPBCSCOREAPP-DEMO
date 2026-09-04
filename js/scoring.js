@@ -1032,6 +1032,17 @@ document.addEventListener('keydown', function(event) {
         // indrukken = naar hoofdmenu" te laten werken, dus daar niet blokkeren.
         if (activePage.id === 'page5' && (event.key === 'F5' || event.key === 'Escape')) {
             event.preventDefault();
+            // ✅ NIEUW: dit is het signaal dat de presenter stuurt bij een
+            // LANGE druk op "omhoog" — gebruiken we nu om de match te
+            // annuleren/verlaten, maar ENKEL als er nog geen enkel punt
+            // ingegeven is (zelfde veiligheidsvoorwaarde als voorheen).
+            if (state.currentMatch && !state.matchEnded) {
+                const p1T = state.player1.turns?.length || 0;
+                const p2T = state.player2.turns?.length || 0;
+                if (p1T === 0 && p2T === 0) {
+                    if (typeof window.showPage === 'function') window.showPage(1);
+                }
+            }
         }
  
         // ✅ NIEUW: zwijntje-geluid bij volumeknop (werkt op elke pagina)
