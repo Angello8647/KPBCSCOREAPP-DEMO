@@ -357,12 +357,16 @@ function updateCurrentScoreDisplay() {
     document.getElementById('p2TargetAvg').textContent = fmtTarget(state.player2.fixedTSG || '−');
 }
 
+
+// ✅ NIEUW: globale mute-schakelaar voor alle geluiden (cijfers + zwijntje)
+let geluidGemute = false;
+
+
 // ==========================================
 // 🗣️ SPRAAKFEEDBACK VOOR PUNTEN
 // ==========================================
 function playScoreSound(score) {
-    // ✅ NIEUW: vooraf-gegenereerde mp3-bestanden i.p.v. speechSynthesis
-    // (die op de Pi's Chromium geen enkele stem beschikbaar had).
+    if (geluidGemute) return;
     if (score < 1 || score > 500) return;
 
     const batchNum = Math.ceil(score / 100);
@@ -1048,12 +1052,20 @@ document.addEventListener('keydown', function(event) {
             }
         }
  
-        // ✅ NIEUW: zwijntje-geluid bij volumeknop (werkt op elke pagina)
         // ✅ NIEUW: zwijntje-geluid — via 'keyd' op de Pi hergemapt van de
         // volumeknop naar de gewone letter "p" (werkt op elke pagina)
         if (event.key === 'p' || event.key === 'P' || event.code === 'KeyP') {
-            const zwijnGeluid = new Audio('js/zwijn.wav');
-            zwijnGeluid.play();
+            if (!geluidGemute) {
+                const zwijnGeluid = new Audio('js/zwijn.wav');
+                zwijnGeluid.play();
+            }
+        }
+
+        // ✅ NIEUW: 'm'-toets (hergemapt van de 2de volumeknop) schakelt alle
+        // geluiden aan/uit
+        if (event.key === 'm' || event.key === 'M' || event.code === 'KeyM') {
+            geluidGemute = !geluidGemute;
+            console.log(geluidGemute ? '🔇 Geluid uitgeschakeld' : '🔊 Geluid ingeschakeld');
         }
     
  
