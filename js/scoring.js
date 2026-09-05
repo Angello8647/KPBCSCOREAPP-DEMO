@@ -361,17 +361,18 @@ function updateCurrentScoreDisplay() {
 // 🗣️ SPRAAKFEEDBACK VOOR PUNTEN
 // ==========================================
 function playScoreSound(score) {
-    if ('speechSynthesis' in window) {
-        // Annuleer lopende spraak om overlapping te voorkomen bij snel klikken
-        window.speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(String(score));
-        utterance.lang = 'nl-BE'; // Vlaams-Nederlands
-        utterance.rate = 1.1;
-        utterance.pitch = 1.0;
-        
-        window.speechSynthesis.speak(utterance);
-    }
+    // ✅ NIEUW: vooraf-gegenereerde mp3-bestanden i.p.v. speechSynthesis
+    // (die op de Pi's Chromium geen enkele stem beschikbaar had).
+    if (score < 1 || score > 500) return;
+
+    const batchNum = Math.ceil(score / 100);
+    const batchStart = String((batchNum - 1) * 100 + 1).padStart(3, '0');
+    const batchEnd = String(batchNum * 100).padStart(3, '0');
+    const bestandsnaam = String(score).padStart(3, '0') + '.mp3';
+    const pad = `js/batch_${batchNum}_${batchStart}-${batchEnd}/${bestandsnaam}`;
+
+    const audio = new Audio(pad);
+    audio.play().catch(e => console.error('Geluid afspelen mislukt:', e));
 }
 
 // ==========================================
