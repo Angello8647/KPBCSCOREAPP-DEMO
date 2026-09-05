@@ -1049,7 +1049,9 @@ document.addEventListener('keydown', function(event) {
         }
  
         // ✅ NIEUW: zwijntje-geluid bij volumeknop (werkt op elke pagina)
-        if (event.keyCode === 174) {
+        // ✅ NIEUW: zwijntje-geluid — via 'keyd' op de Pi hergemapt van de
+        // volumeknop naar de gewone letter "p" (werkt op elke pagina)
+        if (event.key === 'p' || event.key === 'P' || event.code === 'KeyP') {
             const zwijnGeluid = new Audio('js/zwijn.wav');
             zwijnGeluid.play();
         }
