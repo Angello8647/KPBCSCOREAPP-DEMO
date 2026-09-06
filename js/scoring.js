@@ -244,7 +244,7 @@ function updateScoringPage() {
                 B ${currentBeurt}
             </div>
             <div style="margin-top:15px; font-size:1.1rem; color:#bdc3c7; font-weight:bold; text-transform: uppercase; letter-spacing: 1px;">
-                Einde beurt? Klik hier
+                
             </div>
             ${extraInfo}
         </div>`;
