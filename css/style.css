@@ -1116,15 +1116,10 @@
 
 /* Actieve speler effecten */
 .score-cell.active-player { transform: scale(1.03); }
-#p1CurrentCell.active-player { background: white !important; border-color: #f97316 !important; border-width: 14px !important; animation: pulserenBeurt 1.6s ease-in-out infinite; }
+#p1CurrentCell.active-player { background: white !important; border-color: #2563eb !important; border-width: 18px !important; }
 #p1CurrentCell.active-player .cell-value { color: #1e293b !important; }
-#p2CurrentCell.active-player { background: #f1c40f !important; border-color: #f97316 !important; border-width: 14px !important; animation: pulserenBeurt 1.6s ease-in-out infinite; }
+#p2CurrentCell.active-player { background: #f1c40f !important; border-color: #2563eb !important; border-width: 18px !important; }
 #p2CurrentCell.active-player .cell-value { color: #1e293b !important; }
-
-@keyframes pulserenBeurt {
-    0%, 100% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.3); }
-    50% { box-shadow: 0 0 40px 10px rgba(249, 115, 22, 1); }
-}
 
 .score-cell.turn-hidden { visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }
 
