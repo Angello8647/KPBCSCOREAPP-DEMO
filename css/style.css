@@ -4761,3 +4761,21 @@ body.hide-cursor, body.hide-cursor * {
     outline: 3px solid #00d2d3 !important;
     box-shadow: 0 0 20px rgba(0, 210, 211, 0.6) !important;
 }
+/* ✅ NIEUW: "huidige beurt"-blokje visueel onderscheiden van het totaal —
+   subtiel, niet-storend pulserend kader, en een warme, niet-zwarte tekstkleur
+   die aangeeft "dit is nog tijdelijk/in uitvoering". */
+.current-turn-cell {
+    border: 3px solid #fbbf24 !important;
+    animation: subtielPulseren 2s ease-in-out infinite;
+}
+.current-turn-cell {
+    border: 3px solid #22d3ee !important;
+    animation: subtielPulseren 2s ease-in-out infinite;
+}
+.current-turn-cell .cell-value {
+    color: #cffafe !important;
+}
+@keyframes subtielPulseren {
+    0%, 100% { box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 0 0 rgba(34, 211, 238, 0); }
+    50% { box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 0 12px rgba(34, 211, 238, 0.5); }
+}
