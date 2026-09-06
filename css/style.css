@@ -4765,10 +4765,6 @@ body.hide-cursor, body.hide-cursor * {
    subtiel, niet-storend pulserend kader, en een warme, niet-zwarte tekstkleur
    die aangeeft "dit is nog tijdelijk/in uitvoering". */
 .current-turn-cell {
-    border: 3px solid #fbbf24 !important;
-    animation: subtielPulseren 2s ease-in-out infinite;
-}
-.current-turn-cell {
     border: 3px solid #22d3ee !important;
     animation: subtielPulseren 2s ease-in-out infinite;
 }
