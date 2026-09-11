@@ -61,27 +61,54 @@ window.onload = function() {
     checkVoorOnderbrokenMatch();
 };
 
-function checkVoorOnderbrokenMatch() {
+async function checkVoorOnderbrokenMatch() {
     try {
-        const backup = JSON.parse(localStorage.getItem('kpbc_match_backup') || 'null');
-        if (!backup) return;
+        const localStorageBackup = JSON.parse(localStorage.getItem('kpbc_match_backup') || 'null');
 
-        const bevestiging = confirm(
-            `⚠️ Er is een onderbroken match gevonden:\n` +
-            `${backup.player1} vs ${backup.player2}\n` +
-            `Stand: ${backup.p1Score} - ${backup.p2Score}\n\n` +
-            `Wil je deze match herstellen en verderzetten?`
-        );
-
-        if (bevestiging) {
-            herstelOnderbrokenMatch(backup);
-        } else {
-            localStorage.removeItem('kpbc_match_backup');
+        let alleBackups = [];
+        try {
+            const lokaalResponse = await fetch('http://localhost:5000/backups', { method: 'GET' });
+            if (lokaalResponse.ok) {
+                alleBackups = await lokaalResponse.json();
+            }
+        } catch (e) {
+            // Lokaal programmaatje niet bereikbaar
         }
+
+        if (localStorageBackup && !alleBackups.some(b => b.matchId === localStorageBackup.matchId)) {
+            alleBackups.push(localStorageBackup);
+        }
+
+        if (alleBackups.length === 0) return;
+
+        for (const backup of alleBackups) {
+            await behandelEenBackup(backup);
+        }
+        return;
     } catch (e) {
-        console.error('Fout bij het checken van een onderbroken match:', e);
+        console.error('Fout bij het checken van onderbroken matches:', e);
     }
 }
+
+async function behandelEenBackup(backup) {
+    try {
+        // ✅ GEEN dialoogvenster meer, in geen enkel geval — de scheids
+        // bedient dit scherm via de presenter, waar per-ongeluk-annuleren te
+        // riskant is. Alles gebeurt nu automatisch, stil, op de achtergrond.
+        if (backup.completed) {
+            console.log(`ℹ️ Backup voor afgewerkte match ${backup.matchId} gevonden — stille hersynchronisatie proberen.`);
+            if (typeof window.syncPendingMatches === 'function') {
+                await window.syncPendingMatches();
+            }
+        } else {
+            console.log(`ℹ️ Onderbroken, nog-lopende match ${backup.matchId} gevonden — automatisch herstellen.`);
+            herstelOnderbrokenMatch(backup);
+        }
+    } catch (e) {
+        console.error('Fout bij het verwerken van een backup:', e);
+    }
+}
+
 
 function herstelOnderbrokenMatch(backup) {
     const match = state.matches.find(m => String(m.id).trim() === String(backup.matchId).trim());
@@ -118,8 +145,7 @@ function herstelOnderbrokenMatch(backup) {
     if (typeof window.showPage === 'function') window.showPage(5);
     if (typeof updateCurrentScoreDisplay === 'function') updateCurrentScoreDisplay();
     if (typeof updateScoringPage === 'function') updateScoringPage();
-
-    alert('✅ Match hersteld! Je kan verdergaan waar je gebleven was.');
+    // ✅ Geen alert meer — het herstel gebeurt nu volledig stil/automatisch
 }
 
 
