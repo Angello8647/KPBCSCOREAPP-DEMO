@@ -4890,5 +4890,12 @@ window.updateAltScoreboard = function() {
     const gem2 = state.player2.turns.length > 0 ? (state.player2.score / state.player2.turns.length).toFixed(3) : '0.000';
     document.getElementById('altP1Gem').textContent = gem1;
     document.getElementById('altP2Gem').textContent = gem2;
+
+    // ✅ FIX: ook hier het "huidige beurt"-cijfer bijwerken — anders bleef
+    // het cijfer van de VORIGE speler staan bij het wisselen van beurt.
+    const altInputEl = document.getElementById('altCurrentInput');
+    if (altInputEl) {
+        altInputEl.textContent = state.currentInput > 0 ? state.currentInput : '';
+    }
 };
 
