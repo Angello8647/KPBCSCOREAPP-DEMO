@@ -4879,7 +4879,13 @@ window.updateAltScoreboard = function() {
     // 1 stap op elkaar voor, wat hier, met beide zichtbaar naast elkaar,
     // verwarrend overkwam. Nu blijven beide kanten altijd exact gelijk.
     document.getElementById('altP1Turns').textContent = state.turnNumber;
-    document.getElementById('altP2Turns').textContent = state.player2.beurtNummer;
+    // ✅ FIX: beurtNummer van speler 2 toont eigenlijk al de VOLGENDE,
+    // aankomende beurt (verhoogd net na het afronden van zijn vorige beurt).
+    // Zolang hij niet aan de beurt is (gedimd), tonen we daarom 1 minder —
+    // de laatst voltooide beurt, consistent met wat speler 1 op dat moment toont.
+    document.getElementById('altP2Turns').textContent = state.currentPlayer === 2
+        ? state.player2.beurtNummer
+        : state.player2.beurtNummer - 1;
 
     document.getElementById('altP1Score').innerHTML = `${state.player1.score}<span class="alt-score-target">/${state.player1.target}</span>`;
     document.getElementById('altP2Score').innerHTML = `${state.player2.score}<span class="alt-score-target">/${state.player2.target}</span>`;
