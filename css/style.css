@@ -4762,3 +4762,61 @@ body.hide-cursor, body.hide-cursor * {
     box-shadow: 0 0 20px rgba(0, 210, 211, 0.6) !important;
 }
 
+.alt-score-grid{
+    display:grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    grid-template-rows: auto auto auto auto auto auto auto;
+    height:100vh;
+    align-items:center;
+    font-family:system-ui, sans-serif;
+}
+.alt-col-white{ color:#fff; }
+.alt-col-yellow{ color:#f1c40f; }
+.alt-col-mid{ color:#fff; }
+
+.alt-name{
+    font-size:2.2rem;
+    font-weight:700;
+    text-align:center;
+    line-height:1.3;
+}
+.alt-mid-label{
+    font-size:1.6rem;
+    font-weight:600;
+    text-align:center;
+    color:#94a3b8;
+}
+
+.alt-turns{
+    font-size:2rem;
+    font-weight:700;
+    padding:0 40px;
+}
+.alt-col-white.alt-turns{ text-align:left; }
+.alt-col-yellow.alt-turns{ text-align:right; }
+.alt-turns-mid{}
+
+.alt-score{
+    font-size:6rem;
+    font-weight:900;
+    text-align:center;
+}
+.alt-score .alt-score-target{
+    font-size:2.5rem;
+    font-weight:500;
+    color:#94a3b8;
+}
+.alt-score-mid{}
+
+.alt-stat-val{
+    font-size:1.8rem;
+    font-weight:700;
+    text-align:center;
+}
+.alt-stat-label{
+    font-size:1.3rem;
+    font-weight:500;
+    color:#94a3b8;
+    text-align:center;
+}
+
