@@ -4874,8 +4874,12 @@ window.updateAltScoreboard = function() {
     document.getElementById('altDiscipline').textContent = state.currentMatch.discipline || '';
     document.getElementById('altCategory').textContent = state.currentMatch.cat ? `Categorie ${state.currentMatch.cat}` : '';
 
-    document.getElementById('altP1Turns').textContent = state.player1.beurtNummer;
-    document.getElementById('altP2Turns').textContent = state.player2.beurtNummer;
+    // ✅ FIX: beide kanten tonen nu hetzelfde, GEDEELDE state.turnNumber
+    // (i.p.v. elk hun eigen, per-speler beurtNummer) — die liepen bewust
+    // 1 stap op elkaar voor, wat hier, met beide zichtbaar naast elkaar,
+    // verwarrend overkwam. Nu blijven beide kanten altijd exact gelijk.
+    document.getElementById('altP1Turns').textContent = state.turnNumber;
+    document.getElementById('altP2Turns').textContent = state.turnNumber;
 
     document.getElementById('altP1Score').innerHTML = `${state.player1.score}<span class="alt-score-target">/${state.player1.target}</span>`;
     document.getElementById('altP2Score').innerHTML = `${state.player2.score}<span class="alt-score-target">/${state.player2.target}</span>`;
