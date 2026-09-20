@@ -4897,5 +4897,11 @@ window.updateAltScoreboard = function() {
     if (altInputEl) {
         altInputEl.textContent = state.currentInput > 0 ? state.currentInput : '';
     }
-};
 
+    // ✅ NIEUW: de kant die NIET aan de beurt is, dimmen — voor extra
+    // duidelijkheid wie er momenteel speelt.
+    const witKolommen = document.querySelectorAll('.alt-col-white');
+    const geelKolommen = document.querySelectorAll('.alt-col-yellow');
+    witKolommen.forEach(el => el.classList.toggle('alt-dimmed', state.currentPlayer !== 1));
+    geelKolommen.forEach(el => el.classList.toggle('alt-dimmed', state.currentPlayer !== 2));
+};
