@@ -33,6 +33,17 @@
             -webkit-overflow-scrolling: none !important;
             touch-action: none !important;
         }
+
+		/* PAGINA 50: ALTERNATIEF SCOREBORD - geen scroll, geen padding toegestaan */
+		#page50.page {
+		    overflow-y: hidden !important;
+		    overflow: hidden !important;
+		    overscroll-behavior: none !important;
+		    -webkit-overflow-scrolling: none !important;
+		    touch-action: none !important;
+		    padding: 0 !important;
+		}
+
         
         /* Voor de scroll containers binnen pagina 6 */
         #page6 .turns-scroll-container {
