@@ -4819,7 +4819,6 @@ body.hide-cursor, body.hide-cursor * {
     font-weight:900;
     text-align:center;
     line-height: 0.8;
-    margin-bottom: 30px;
 }
 .alt-score .alt-score-target{
     font-size:5rem;
@@ -4832,6 +4831,7 @@ body.hide-cursor, body.hide-cursor * {
     font-size:3.0rem;
     font-weight:700;
     text-align:center;
+    padding-top: 60px;
 }
 .alt-stat-label{
     font-size:2.0rem;
