@@ -4775,7 +4775,7 @@ body.hide-cursor, body.hide-cursor * {
 .alt-col-mid{ color:#fff; }
 
 .alt-name{
-    font-size:2.2rem;
+    font-size:4.4rem;
     font-weight:700;
     text-align:center;
     line-height:1.3;
@@ -4788,7 +4788,7 @@ body.hide-cursor, body.hide-cursor * {
 }
 
 .alt-turns{
-    font-size:2rem;
+    font-size:5rem;
     font-weight:700;
     padding:0 40px;
 }
@@ -4797,12 +4797,12 @@ body.hide-cursor, body.hide-cursor * {
 .alt-turns-mid{}
 
 .alt-score{
-    font-size:6rem;
+    font-size:18rem;
     font-weight:900;
     text-align:center;
 }
 .alt-score .alt-score-target{
-    font-size:2.5rem;
+    font-size:3.75rem;
     font-weight:500;
     color:#94a3b8;
 }
@@ -4821,7 +4821,7 @@ body.hide-cursor, body.hide-cursor * {
 }
 
 .alt-current-input{
-    font-size:2.5rem;
+    font-size:7rem;
     font-weight:700;
     text-align:center;
     color:#fff;
