@@ -1064,7 +1064,7 @@ document.addEventListener('keydown', function(event) {
         // veroorzaken (verlies van match-voortgang). Op andere pagina's
         // (bv. pagina 6/20) is dit signaal net bewust gebruikt om "lang
         // indrukken = naar hoofdmenu" te laten werken, dus daar niet blokkeren.
-        if (activePage.id === 'page5' && (event.key === 'F5' || event.key === 'Escape')) {
+        if ((activePage.id === 'page5' || activePage.id === 'page50') && (event.key === 'F5' || event.key === 'Escape')) {
             event.preventDefault();
             // ✅ NIEUW: dit is het signaal dat de presenter stuurt bij een
             // LANGE druk op "omhoog" — gebruiken we nu om de match te
@@ -1465,7 +1465,7 @@ document.addEventListener('keydown', function(event) {
 
         // ✅ PAGINA 5: SCORING
         // FIX: `now` was nergens gedefinieerd — toegevoegd als Date.now()
-        if (activePage.id === 'page5') {
+        if (activePage.id === 'page5' || activePage.id === 'page50') {
             if (!state.currentMatch || state.matchEnded) return;
  
             const now = Date.now();
@@ -1543,7 +1543,7 @@ document.addEventListener('keydown', function(event) {
 
         
         // ✅ PAGINA 5: hold-to-go-back logica bij loslaten van PageUp
-        if (activePage.id === 'page5') {
+        if (activePage.id === 'page5' || activePage.id === 'page50') {
             if (event.key === 'PageUp' || event.key === 'ArrowUp') {
                 event.preventDefault();
                 if (pageUpStartTime === null) return;
