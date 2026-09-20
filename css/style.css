@@ -4820,3 +4820,10 @@ body.hide-cursor, body.hide-cursor * {
     text-align:center;
 }
 
+.alt-current-input{
+    font-size:2.5rem;
+    font-weight:700;
+    text-align:center;
+    color:#fff;
+}
+
