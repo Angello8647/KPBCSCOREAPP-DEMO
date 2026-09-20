@@ -4865,6 +4865,16 @@ window.updateAltCurrentInputDisplay = function() {
 
     altInputEl.firstChild.textContent = state.currentInput;
     altRestEl.textContent = `/${nogTeMaken}`;
+
+    // ✅ NIEUW: de totaalscore van de SPELENDE speler live meetellen met het
+    // huidige, nog niet bevestigde cijfer — de andere kant blijft ongewijzigd
+    // (die toont nog steeds enkel zijn eigen, laatst bevestigde score).
+    const liveTotaal = p.score + state.currentInput;
+    const scoreElId = state.currentPlayer === 1 ? 'altP1Score' : 'altP2Score';
+    const scoreEl = document.getElementById(scoreElId);
+    if (scoreEl) {
+        scoreEl.innerHTML = `${liveTotaal}<span class="alt-score-target">/${p.target}</span>`;
+    }
 };
 
 
