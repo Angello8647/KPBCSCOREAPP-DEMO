@@ -4878,6 +4878,21 @@ window.updateAltScoreboard = function() {
     // (i.p.v. elk hun eigen, per-speler beurtNummer) — die liepen bewust
     // 1 stap op elkaar voor, wat hier, met beide zichtbaar naast elkaar,
     // verwarrend overkwam. Nu blijven beide kanten altijd exact gelijk.
+    // ✅ NIEUW: Nabeurt-melding, gecentreerd in het midden, op dezelfde
+    // hoogte als de beurtnummers — exact dezelfde 2 voorwaarden als op
+    // pagina 5 (gewone nabeurt, en de Koning(in)sprijskamp-variant).
+    const isKoningCatMatchAlt = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
+    const isWhiteAlt = (state.currentPlayer === 1 && state.player1.isWhite) || (state.currentPlayer === 2 && state.player2.isWhite);
+    const currentBeurtAlt = state.currentPlayer === 1 ? state.player1.beurtNummer : state.player2.beurtNummer;
+    const altNabeurtEl = document.getElementById('altNabeurt');
+    if (altNabeurtEl) {
+        if (state.isNabeurt || (isKoningCatMatchAlt && !isWhiteAlt && currentBeurtAlt === 15)) {
+            altNabeurtEl.textContent = '⚠️ NABEURT';
+        } else {
+            altNabeurtEl.textContent = '';
+        }
+    }
+
     document.getElementById('altP1Turns').textContent = state.turnNumber;
     // ✅ FIX: beurtNummer van speler 2 toont eigenlijk al de VOLGENDE,
     // aankomende beurt (verhoogd net na het afronden van zijn vorige beurt).
