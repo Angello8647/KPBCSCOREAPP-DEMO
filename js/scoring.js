@@ -429,6 +429,14 @@ window.changeScore = function(delta) {
     }
     
     updateCurrentScoreDisplay();
+    // ✅ NIEUW: het huidige, nog niet bevestigde cijfer tonen op het
+    // alternatieve scorebord (pagina 50) — verschijnt in de kolom van de
+    // speler die AAN DE BEURT is, en gaat terug naar leeg bij een nieuwe beurt.
+    const altInputEl = document.getElementById('altCurrentInput');
+    if (altInputEl) {
+        altInputEl.textContent = state.currentInput > 0 ? state.currentInput : '';
+    }
+
 }
 
 // ==========================================
