@@ -4859,7 +4859,7 @@ body.hide-cursor, body.hide-cursor * {
     padding-top: 180px;
 }
 .alt-current-input-rest{
-    font-size:0.5em;
+    font-size:0.5rem;
     color:#94a3b8;
     font-weight:500;
 }
