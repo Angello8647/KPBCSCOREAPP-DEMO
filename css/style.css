@@ -4849,3 +4849,6 @@ body.hide-cursor, body.hide-cursor * {
 .alt-dimmed{
     opacity: 0.35;
 }
+.alt-eerste-stat{
+    padding-top: 60px;
+}
