@@ -1067,6 +1067,20 @@ document.addEventListener('keydown', function(event) {
         // veroorzaken (verlies van match-voortgang). Op andere pagina's
         // (bv. pagina 6/20) is dit signaal net bewust gebruikt om "lang
         // indrukken = naar hoofdmenu" te laten werken, dus daar niet blokkeren.
+        // ✅ NIEUW: volumeknop-omhoog ("m") wisselt tussen de 2 scoreborden,
+        // altijd, ongeacht of er al gescoord is — een betrouwbaar, enkel
+        // signaal, in tegenstelling tot F5/Escape (die willekeurig alterneren).
+        if ((activePage.id === 'page5' || activePage.id === 'page50') && (event.key === 'm' || event.key === 'M' || event.code === 'KeyM')) {
+            event.preventDefault();
+            if (activePage.id === 'page5') {
+                if (typeof window.showPage === 'function') window.showPage(50);
+                if (typeof window.updateAltScoreboard === 'function') window.updateAltScoreboard();
+            } else {
+                if (typeof window.showPage === 'function') window.showPage(5);
+            }
+            return;
+        }
+
         if ((activePage.id === 'page5' || activePage.id === 'page50') && (event.key === 'F5' || event.key === 'Escape')) {
             event.preventDefault();
             // ✅ NIEUW: dit is het signaal dat de presenter stuurt bij een
@@ -1082,6 +1096,13 @@ document.addEventListener('keydown', function(event) {
                 // beurt.
                 if (p1T === 0 && p2T === 0 && state.currentInput === 0) {
                     if (typeof window.showPage === 'function') window.showPage(1);
+                } else {
+                    // ✅ NIEUW: zodra er al gescoord is, gebruiken we F5/Escape
+                    // (het signaal van de presenter bij een lange druk) voor
+                    // de mute-functie — scorebord-wisselen gebeurt voortaan
+                    // via de volumeknop-omhoog ("m").
+                    geluidGemute = !geluidGemute;
+                    console.log(geluidGemute ? '🔇 Geluid uitgeschakeld' : '🔊 Geluid ingeschakeld');
                 }
             }
         }
@@ -1097,7 +1118,9 @@ document.addEventListener('keydown', function(event) {
 
         // ✅ NIEUW: 'm'-toets (hergemapt van de 2de volumeknop) schakelt alle
         // geluiden aan/uit
-        if (event.key === 'm' || event.key === 'M' || event.code === 'KeyM') {
+        // ✅ FIX: op pagina 5/50 doet "m" iets anders (scorebord wisselen,
+        // zie verderop) — de globale mute-toggle slaan we daar dus over.
+        if ((event.key === 'm' || event.key === 'M' || event.code === 'KeyM') && activePage.id !== 'page5' && activePage.id !== 'page50') {
             geluidGemute = !geluidGemute;
             console.log(geluidGemute ? '🔇 Geluid uitgeschakeld' : '🔊 Geluid ingeschakeld');
         }
