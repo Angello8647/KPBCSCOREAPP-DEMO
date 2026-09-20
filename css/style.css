@@ -4812,7 +4812,13 @@ body.hide-cursor, body.hide-cursor * {
 }
 .alt-col-white.alt-turns{ text-align:left; }
 .alt-col-yellow.alt-turns{ text-align:right; }
-.alt-turns-mid{}
+.alt-turns-mid{
+    font-size:1.6rem;
+    font-weight:700;
+    text-align:center;
+    color:#ffcc00;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+}
 
 .alt-score{
     font-size:18rem;
