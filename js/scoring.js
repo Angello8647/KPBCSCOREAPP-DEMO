@@ -429,14 +429,9 @@ window.changeScore = function(delta) {
     }
     
     updateCurrentScoreDisplay();
-    // ✅ NIEUW: het huidige, nog niet bevestigde cijfer tonen op het
-    // alternatieve scorebord (pagina 50) — verschijnt in de kolom van de
-    // speler die AAN DE BEURT is, en gaat terug naar leeg bij een nieuwe beurt.
-    const altInputEl = document.getElementById('altCurrentInput');
-    if (altInputEl) {
-        altInputEl.textContent = state.currentInput > 0 ? state.currentInput : '';
-    }
-
+    // ✅ NIEUW: het huidige, nog niet bevestigde cijfer + "nog te maken"
+    // live bijwerken op het alternatieve scorebord (pagina 50).
+    if (typeof window.updateAltCurrentInputDisplay === 'function') window.updateAltCurrentInputDisplay();
 }
 
 // ==========================================
@@ -4860,6 +4855,19 @@ window.showDamesSpelersKeuze = async function() {
     };
 };
 
+window.updateAltCurrentInputDisplay = function() {
+    const altInputEl = document.getElementById('altCurrentInput');
+    const altRestEl = document.getElementById('altCurrentInputRest');
+    if (!altInputEl || !altRestEl || !state.currentMatch) return;
+
+    const p = state.currentPlayer === 1 ? state.player1 : state.player2;
+    const nogTeMaken = Math.max(0, p.target - p.score - state.currentInput);
+
+    altInputEl.firstChild.textContent = state.currentInput;
+    altRestEl.textContent = `/${nogTeMaken}`;
+};
+
+
 window.updateAltScoreboard = function() {
     if (!state.currentMatch) return;
 
@@ -4916,12 +4924,12 @@ window.updateAltScoreboard = function() {
     document.getElementById('altP1Gem').textContent = gem1;
     document.getElementById('altP2Gem').textContent = gem2;
 
-    // ✅ FIX: ook hier het "huidige beurt"-cijfer bijwerken — anders bleef
-    // het cijfer van de VORIGE speler staan bij het wisselen van beurt.
-    const altInputEl = document.getElementById('altCurrentInput');
-    if (altInputEl) {
-        altInputEl.textContent = state.currentInput > 0 ? state.currentInput : '';
-    }
+    // ✅ NIEUW: het middelste veld toont altijd "[huidig]/[nog te maken]",
+    // voor de speler die momenteel aan de beurt is — "nog te maken" wordt
+    // LIVE herberekend (doel min bevestigde score min huidig, nog niet
+    // bevestigd cijfer), en daalt dus mee terwijl er binnen de beurt
+    // gescoord wordt.
+    window.updateAltCurrentInputDisplay();
 
     // ✅ NIEUW: de kant die NIET aan de beurt is, dimmen — voor extra
     // duidelijkheid wie er momenteel speelt.
