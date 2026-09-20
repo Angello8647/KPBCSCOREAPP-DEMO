@@ -253,6 +253,8 @@ function updateScoringPage() {
     if (typeof updateSideScoreDisplays === 'function') updateSideScoreDisplays();
     updateCurrentScoreDisplay();
     updateHeaderButtons();
+    // ✅ NIEUW: alternatief scorebord (pagina 50) live meebewegen, indien actief
+    if (typeof window.updateAltScoreboard === 'function') window.updateAltScoreboard();
     
     const ub = document.getElementById('undoBtn');
     if (ub) ub.disabled = !window.lastStateBeforeAdd;
@@ -1525,6 +1527,21 @@ document.addEventListener('keydown', function(event) {
             return;
         }
 
+        // ✅ NIEUW (TIJDELIJK, ENKEL VOOR TESTEN): Alt-toets wisselt tussen
+        // het normale scoringsscherm (pagina 5) en het alternatieve
+        // scorebord (pagina 50), tijdens een lopende match.
+        if (event.key === 'Alt' && (activePage.id === 'page5' || activePage.id === 'page50')) {
+            event.preventDefault();
+            if (activePage.id === 'page5') {
+                if (typeof window.showPage === 'function') window.showPage(50);
+                if (typeof window.updateAltScoreboard === 'function') window.updateAltScoreboard();
+            } else {
+                if (typeof window.showPage === 'function') window.showPage(5);
+            }
+            return;
+        }
+
+        
         // ✅ PAGINA 5: hold-to-go-back logica bij loslaten van PageUp
         if (activePage.id === 'page5') {
             if (event.key === 'PageUp' || event.key === 'ArrowUp') {
@@ -4835,4 +4852,35 @@ window.showDamesSpelersKeuze = async function() {
     };
 };
 
+window.updateAltScoreboard = function() {
+    if (!state.currentMatch) return;
+
+    const getFirstName = (fullName) => (fullName || '').split(' ')[0];
+    const getLastName = (fullName) => (fullName || '').split(' ').slice(1).join(' ');
+
+    document.getElementById('altP1First').textContent = getFirstName(state.currentMatch.p1);
+    document.getElementById('altP1Last').textContent = getLastName(state.currentMatch.p1);
+    document.getElementById('altP2First').textContent = getFirstName(state.currentMatch.p2);
+    document.getElementById('altP2Last').textContent = getLastName(state.currentMatch.p2);
+
+    document.getElementById('altDiscipline').textContent = state.currentMatch.discipline || '';
+    document.getElementById('altCategory').textContent = state.currentMatch.cat ? `Categorie ${state.currentMatch.cat}` : '';
+
+    document.getElementById('altP1Turns').textContent = state.player1.beurtNummer;
+    document.getElementById('altP2Turns').textContent = state.player2.beurtNummer;
+
+    document.getElementById('altP1Score').innerHTML = `${state.player1.score}<span class="alt-score-target">/${state.player1.target}</span>`;
+    document.getElementById('altP2Score').innerHTML = `${state.player2.score}<span class="alt-score-target">/${state.player2.target}</span>`;
+
+    document.getElementById('altP1Highest').textContent = state.player1.highestSeries;
+    document.getElementById('altP2Highest').textContent = state.player2.highestSeries;
+
+    document.getElementById('altP1TSG').textContent = state.player1.fixedTSG || '';
+    document.getElementById('altP2TSG').textContent = state.player2.fixedTSG || '';
+
+    const gem1 = state.player1.turns.length > 0 ? (state.player1.score / state.player1.turns.length).toFixed(3) : '0.000';
+    const gem2 = state.player2.turns.length > 0 ? (state.player2.score / state.player2.turns.length).toFixed(3) : '0.000';
+    document.getElementById('altP1Gem').textContent = gem1;
+    document.getElementById('altP2Gem').textContent = gem2;
+};
 
