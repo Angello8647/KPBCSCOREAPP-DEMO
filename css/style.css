@@ -4762,6 +4762,11 @@ body.hide-cursor, body.hide-cursor * {
     box-shadow: 0 0 20px rgba(0, 210, 211, 0.6) !important;
 }
 
+#page50{
+    margin:0;
+    padding:0;
+    overflow:hidden;
+}
 .alt-score-grid{
     display:grid;
     grid-template-columns: 2fr 1fr 2fr;
@@ -4803,6 +4808,7 @@ body.hide-cursor, body.hide-cursor * {
     font-weight:900;
     text-align:center;
     line-height: 0.8;
+    margin-bottom: 30px;
 }
 .alt-score .alt-score-target{
     font-size:5rem;
@@ -4812,7 +4818,7 @@ body.hide-cursor, body.hide-cursor * {
 .alt-score-mid{}
 
 .alt-stat-val{
-    font-size:1.4rem;
+    font-size:3.0rem;
     font-weight:700;
     text-align:center;
 }
