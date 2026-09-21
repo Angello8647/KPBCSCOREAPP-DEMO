@@ -4957,6 +4957,16 @@ window.updateAltScoreboard = function() {
     document.getElementById('altP1Gem').textContent = gem1;
     document.getElementById('altP2Gem').textContent = gem2;
 
+    // ✅ NIEUW: progressiebalk per speler, percentage van doel bereikt
+    // (bevestigde score, geplafonneerd op 100% als het doel gehaald/
+    // overschreden is).
+    const pct1 = state.player1.target > 0 ? Math.min(100, (state.player1.score / state.player1.target) * 100) : 0;
+    const pct2 = state.player2.target > 0 ? Math.min(100, (state.player2.score / state.player2.target) * 100) : 0;
+    const bar1 = document.getElementById('altP1Progress');
+    const bar2 = document.getElementById('altP2Progress');
+    if (bar1) bar1.style.width = `${pct1}%`;
+    if (bar2) bar2.style.width = `${pct2}%`;
+
     // ✅ NIEUW: het middelste veld toont altijd "[huidig]/[nog te maken]",
     // voor de speler die momenteel aan de beurt is — "nog te maken" wordt
     // LIVE herberekend (doel min bevestigde score min huidig, nog niet
