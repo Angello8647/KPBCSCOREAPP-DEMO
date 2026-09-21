@@ -4863,3 +4863,18 @@ body.hide-cursor, body.hide-cursor * {
     color:#94a3b8;
     font-weight:500;
 }
+
+.alt-progress-wrap{
+    height: 40px;
+    margin: 20px 40px 0;
+    border: 3px solid #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    background: transparent;
+}
+.alt-progress-bar{
+    height: 100%;
+    width: 0%;
+    background: #2ecc71;
+    transition: width 0.3s ease;
+}
