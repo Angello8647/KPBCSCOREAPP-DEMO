@@ -4845,6 +4845,13 @@ body.hide-cursor, body.hide-cursor * {
     font-size:13rem;
     font-weight:700;
     text-align:center;
+    color:#2ecc71;
+    transition: color 0.3s ease;
+}
+.alt-current-input.alt-input-bijna{
+    color:#f97316;
+}
+.alt-current-input.alt-input-gehaald{
     color:#3b82f6;
 }
 
