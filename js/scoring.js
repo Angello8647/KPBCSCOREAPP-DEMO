@@ -4901,13 +4901,34 @@ window.updateAltCurrentInputDisplay = function() {
 
     // ✅ NIEUW: de progressiebalk van de SPELENDE speler live meetellen
     // met het huidige, nog niet bevestigde cijfer.
-    const liveBarId = state.currentPlayer === 1 ? 'altP1Progress' : 'altP2Progress';
-    const liveBar = document.getElementById(liveBarId);
-    if (liveBar && p.target > 0) {
-        const livePct = Math.min(100, (liveTotaal / p.target) * 100);
-        liveBar.style.width = `${livePct}%`;
+    window.updateAltProgressBar(state.currentPlayer, liveTotaal, p.target);
+
+    const nogTeMakenVoorKleur = p.target - liveTotaal;
+    altInputEl.classList.remove('alt-input-bijna', 'alt-input-gehaald');
+    if (nogTeMakenVoorKleur <= 0) {
+        altInputEl.classList.add('alt-input-gehaald');
+    } else if (nogTeMakenVoorKleur <= 5) {
+        altInputEl.classList.add('alt-input-bijna');
     }
 };
+
+window.updateAltProgressBar = function(playerNum, score, target) {
+    const barId = playerNum === 1 ? 'altP1Progress' : 'altP2Progress';
+    const bar = document.getElementById(barId);
+    if (!bar || target <= 0) return;
+
+    const nogTeMaken = target - score;
+    const pct = Math.min(100, (score / target) * 100);
+
+    bar.style.width = `${pct}%`;
+    bar.classList.remove('alt-progress-bijna', 'alt-progress-gehaald');
+    if (nogTeMaken <= 0) {
+        bar.classList.add('alt-progress-gehaald');
+    } else if (nogTeMaken <= 5) {
+        bar.classList.add('alt-progress-bijna');
+    }
+};
+
 
 
 window.updateAltScoreboard = function() {
@@ -4969,12 +4990,8 @@ window.updateAltScoreboard = function() {
     // ✅ NIEUW: progressiebalk per speler, percentage van doel bereikt
     // (bevestigde score, geplafonneerd op 100% als het doel gehaald/
     // overschreden is).
-    const pct1 = state.player1.target > 0 ? Math.min(100, (state.player1.score / state.player1.target) * 100) : 0;
-    const pct2 = state.player2.target > 0 ? Math.min(100, (state.player2.score / state.player2.target) * 100) : 0;
-    const bar1 = document.getElementById('altP1Progress');
-    const bar2 = document.getElementById('altP2Progress');
-    if (bar1) bar1.style.width = `${pct1}%`;
-    if (bar2) bar2.style.width = `${pct2}%`;
+    window.updateAltProgressBar(1, state.player1.score, state.player1.target);
+    window.updateAltProgressBar(2, state.player2.score, state.player2.target);
 
     // ✅ NIEUW: het middelste veld toont altijd "[huidig]/[nog te maken]",
     // voor de speler die momenteel aan de beurt is — "nog te maken" wordt
