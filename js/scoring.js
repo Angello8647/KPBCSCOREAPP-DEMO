@@ -368,6 +368,9 @@ let geluidGemute = false;
 // 🗣️ SPRAAKFEEDBACK VOOR PUNTEN
 // ==========================================
 function playScoreSound(score) {
+    // ✅ TIJDELIJK UITGESCHAKELD: de spraakfunctie stoort momenteel (radio
+    // speelt ook af). Verwijder deze regel om de functie weer te activeren.
+    return;
     if (geluidGemute) return;
     if (score < 1 || score > 500) return;
 
