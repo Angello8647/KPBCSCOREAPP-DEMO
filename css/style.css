@@ -4872,5 +4872,11 @@ body.hide-cursor, body.hide-cursor * {
     height: 100%;
     width: 0%;
     background: #2ecc71;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+.alt-progress-bar.alt-progress-bijna{
+    background: #f97316;
+}
+.alt-progress-bar.alt-progress-gehaald{
+    background: #3b82f6;
 }
