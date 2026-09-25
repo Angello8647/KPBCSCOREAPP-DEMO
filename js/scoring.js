@@ -393,8 +393,14 @@ function playScoreSound(score) {
     const batchNum = Math.ceil(score / 100);
     const batchStart = String((batchNum - 1) * 100 + 1).padStart(3, '0');
     const batchEnd = String(batchNum * 100).padStart(3, '0');
-    const bestandsnaam = String(score).padStart(3, '0') + '.mp3';
-    const pad = `js/batch_${batchNum}_${batchStart}-${batchEnd}/${bestandsnaam}`;
+    const bestandsnaam = String(score).padStart(3, '0') + '.wav';
+    // ✅ FIX: WAV-bestanden i.p.v. MP3 (geen decodering nodig, dus geen
+    // vertraging/vervorming meer bij het EERSTE geluid na een periode van
+    // inactiviteit) — nieuwe, geneste mapstructuur: elke batch-map heeft nu
+    // een "_wav"-achtervoegsel, en bevat daarbinnen nog een identieke
+    // submap (zonder achtervoegsel) waar de bestanden zelf in staan.
+    const batchMapNaam = `batch_${batchNum}_${batchStart}-${batchEnd}`;
+    const pad = `js/${batchMapNaam}_wav/${batchMapNaam}/${bestandsnaam}`;
 
     let factor = null;
     if (EXTRA_VERSTERKTE_SCORES.has(score)) factor = VERSTERKINGSFACTOR;
