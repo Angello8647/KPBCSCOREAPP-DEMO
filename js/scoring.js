@@ -367,6 +367,23 @@ let geluidGemute = false;
 // ==========================================
 // 🗣️ SPRAAKFEEDBACK VOOR PUNTEN
 // ==========================================
+// ✅ NIEUW: gedeelde AudioContext, hergebruikt over alle afspeel-aanroepen
+// heen (een nieuwe aanmaken per geluid is onnodig zwaar, en sommige
+// browsers beperken het aantal AudioContext-instanties).
+let sharedAudioContext = null;
+function getSharedAudioContext() {
+    if (!sharedAudioContext) {
+        sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return sharedAudioContext;
+}
+
+// ✅ NIEUW: deze specifieke opnames zijn te kort/zacht ingesproken — hier
+// kunstmatig versterkt, ver BOVEN het normale maximum (wat de gewone
+// <audio>.volume-instelling niet kan, die stopt bij 1.0).
+const EXTRA_VERSTERKTE_SCORES = new Set([1, 2, 3, 11]);
+const VERSTERKINGSFACTOR = 3.0;
+
 function playScoreSound(score) {
     if (geluidGemute) return;
     if (score < 1 || score > 500) return;
@@ -377,8 +394,31 @@ function playScoreSound(score) {
     const bestandsnaam = String(score).padStart(3, '0') + '.mp3';
     const pad = `js/batch_${batchNum}_${batchStart}-${batchEnd}/${bestandsnaam}`;
 
-    const audio = new Audio(pad);
-    audio.play().catch(e => console.error('Geluid afspelen mislukt:', e));
+    if (EXTRA_VERSTERKTE_SCORES.has(score)) {
+        try {
+            const ctx = getSharedAudioContext();
+            fetch(pad)
+                .then(res => res.arrayBuffer())
+                .then(buf => ctx.decodeAudioData(buf))
+                .then(audioBuffer => {
+                    const source = ctx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    const gainNode = ctx.createGain();
+                    gainNode.gain.value = VERSTERKINGSFACTOR;
+                    source.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    source.start(0);
+                })
+                .catch(e => console.error('Versterkt geluid afspelen mislukt:', e));
+        } catch (e) {
+            console.error('Web Audio API niet beschikbaar, gewone afspeling:', e);
+            const audio = new Audio(pad);
+            audio.play().catch(err => console.error('Geluid afspelen mislukt:', err));
+        }
+    } else {
+        const audio = new Audio(pad);
+        audio.play().catch(e => console.error('Geluid afspelen mislukt:', e));
+    }
 }
 
 // ==========================================
