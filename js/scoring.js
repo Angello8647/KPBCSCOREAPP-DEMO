@@ -371,12 +371,39 @@ let geluidGemute = false;
 // heen (een nieuwe aanmaken per geluid is onnodig zwaar, en sommige
 // browsers beperken het aantal AudioContext-instanties).
 let sharedAudioContext = null;
+let wekToonGestart = false;
+
 function getSharedAudioContext() {
     if (!sharedAudioContext) {
         sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
     return sharedAudioContext;
 }
+
+// ✅ NIEUW: een continue, quasi-onhoorbare toon die de versterker/speakers
+// voortdurend "wakker" houdt — de WAV-conversie loste het probleem niet op,
+// wat erop wijst dat de oorzaak bij de HARDWARE zelf ligt (spaarstand na
+// stilte), niet bij het bestandsformaat.
+function startWekToon() {
+    if (wekToonGestart) return;
+    wekToonGestart = true;
+    try {
+        const ctx = getSharedAudioContext();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.frequency.value = 20;
+        gainNode.gain.value = 0.003;
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.start();
+        console.log('🔊 Wektoon gestart — versterker blijft actief');
+    } catch (e) {
+        console.error('Wektoon kon niet starten:', e);
+    }
+}
+
+document.addEventListener('click', startWekToon, { once: true });
+document.addEventListener('keydown', startWekToon, { once: true });
 
 // ✅ NIEUW: deze specifieke opnames zijn te kort/zacht ingesproken — hier
 // kunstmatig versterkt, ver BOVEN het normale maximum (wat de gewone
