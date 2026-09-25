@@ -408,11 +408,12 @@ document.addEventListener('keydown', startWekToon, { once: true });
 // ✅ NIEUW: deze specifieke opnames zijn te kort/zacht ingesproken — hier
 // kunstmatig versterkt, ver BOVEN het normale maximum (wat de gewone
 // <audio>.volume-instelling niet kan, die stopt bij 1.0).
-const EXTRA_VERSTERKTE_SCORES = new Set([11]);
-const ZEER_STERK_VERSTERKTE_SCORES = new Set([1, 2, 3]);
+// ✅ Uitgeschakeld: de wektoon loste het echte probleem (koude start) al op —
+// deze extra versterking zorgde nu voor lichte vervorming ("raar" geluid).
+const EXTRA_VERSTERKTE_SCORES = new Set([]);
+const ZEER_STERK_VERSTERKTE_SCORES = new Set([]);
 const VERSTERKINGSFACTOR = 3.0;
 const STERKE_VERSTERKINGSFACTOR = 6.0;
-
 function playScoreSound(score) {
     if (geluidGemute) return;
     if (score < 1 || score > 500) return;
