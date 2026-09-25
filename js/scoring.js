@@ -381,8 +381,10 @@ function getSharedAudioContext() {
 // ✅ NIEUW: deze specifieke opnames zijn te kort/zacht ingesproken — hier
 // kunstmatig versterkt, ver BOVEN het normale maximum (wat de gewone
 // <audio>.volume-instelling niet kan, die stopt bij 1.0).
-const EXTRA_VERSTERKTE_SCORES = new Set([1, 2, 3, 11]);
+const EXTRA_VERSTERKTE_SCORES = new Set([11]);
+const ZEER_STERK_VERSTERKTE_SCORES = new Set([1, 2, 3]);
 const VERSTERKINGSFACTOR = 3.0;
+const STERKE_VERSTERKINGSFACTOR = 6.0;
 
 function playScoreSound(score) {
     if (geluidGemute) return;
@@ -394,7 +396,11 @@ function playScoreSound(score) {
     const bestandsnaam = String(score).padStart(3, '0') + '.mp3';
     const pad = `js/batch_${batchNum}_${batchStart}-${batchEnd}/${bestandsnaam}`;
 
-    if (EXTRA_VERSTERKTE_SCORES.has(score)) {
+    let factor = null;
+    if (EXTRA_VERSTERKTE_SCORES.has(score)) factor = VERSTERKINGSFACTOR;
+    else if (ZEER_STERK_VERSTERKTE_SCORES.has(score)) factor = STERKE_VERSTERKINGSFACTOR;
+
+    if (factor !== null) {
         try {
             const ctx = getSharedAudioContext();
             fetch(pad)
@@ -404,7 +410,7 @@ function playScoreSound(score) {
                     const source = ctx.createBufferSource();
                     source.buffer = audioBuffer;
                     const gainNode = ctx.createGain();
-                    gainNode.gain.value = VERSTERKINGSFACTOR;
+                    gainNode.gain.value = factor;
                     source.connect(gainNode);
                     gainNode.connect(ctx.destination);
                     source.start(0);
