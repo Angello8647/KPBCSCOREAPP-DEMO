@@ -1561,9 +1561,22 @@ document.addEventListener('keydown', function(event) {
         // FIX: `now` was nergens gedefinieerd — toegevoegd als Date.now()
         if (activePage.id === 'page5' || activePage.id === 'page50') {
             if (!state.currentMatch || state.matchEnded) return;
- 
+
             const now = Date.now();
- 
+
+            // ✅ NIEUW: lange druk op Tab (via de presenter) stuurt "Alt" —
+            // gebruiken we om te wisselen tussen de 2 scoreborden.
+            if (event.key === 'Alt') {
+                event.preventDefault();
+                if (activePage.id === 'page5') {
+                    if (typeof window.showPage === 'function') window.showPage(50);
+                    if (typeof window.updateAltScoreboard === 'function') window.updateAltScoreboard();
+                } else {
+                    if (typeof window.showPage === 'function') window.showPage(5);
+                }
+                return;
+            }
+
             if (event.key === 'PageUp' || event.key === 'ArrowUp') {
                 event.preventDefault();
                 pageUpStartTime = Date.now();
