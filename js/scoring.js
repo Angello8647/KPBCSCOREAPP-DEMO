@@ -1165,12 +1165,15 @@ document.addEventListener('keydown', function(event) {
                 if (p1T === 0 && p2T === 0 && state.currentInput === 0) {
                     if (typeof window.showPage === 'function') window.showPage(1);
                 } else {
-                    // ✅ NIEUW: zodra er al gescoord is, gebruiken we F5/Escape
-                    // (het signaal van de presenter bij een lange druk) voor
-                    // de mute-functie — scorebord-wisselen gebeurt voortaan
-                    // via de volumeknop-omhoog ("m").
-                    geluidGemute = !geluidGemute;
-                    console.log(geluidGemute ? '🔇 Geluid uitgeschakeld' : '🔊 Geluid ingeschakeld');
+                    // ✅ NIEUW: zodra er al gescoord is, speelt F5/Escape (het
+                    // signaal van de presenter bij een lange druk op omhoog)
+                    // het zwijntje-geluid af — een leuk entertainment-geluidje
+                    // dat de scheids handmatig kan triggeren bij een
+                    // onbedoelde speler-fout.
+                    if (!geluidGemute) {
+                        const zwijnGeluid = new Audio('js/zwijn.wav');
+                        zwijnGeluid.play();
+                    }
                 }
             }
         }
@@ -1186,8 +1189,8 @@ document.addEventListener('keydown', function(event) {
 
         // ✅ NIEUW: 'm'-toets (hergemapt van de 2de volumeknop) schakelt alle
         // geluiden aan/uit
-        // ✅ FIX: op pagina 5/50 doet "m" iets anders (scorebord wisselen,
-        // zie verderop) — de globale mute-toggle slaan we daar dus over.
+        // ✅ Mute-toggle, overal (ook pagina 5/50) — scorebord-wisselen
+        // gebeurt via de lange-druk-Tab ("Alt"), niet via deze toets.
         if (event.key === 'm' || event.key === 'M' || event.code === 'KeyM') {
             geluidGemute = !geluidGemute;
             console.log(geluidGemute ? '🔇 Geluid uitgeschakeld' : '🔊 Geluid ingeschakeld');
