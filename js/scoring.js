@@ -415,6 +415,7 @@ const ZEER_STERK_VERSTERKTE_SCORES = new Set([]);
 const VERSTERKINGSFACTOR = 3.0;
 const STERKE_VERSTERKINGSFACTOR = 6.0;
 function playScoreSound(score) {
+    return; // TIJDELIJK UIT op de demo: verwijder deze regel om het geluid weer aan te zetten
     if (geluidGemute) return;
     if (score < 1 || score > 500) return;
 
