@@ -4939,3 +4939,9 @@ body.hide-cursor, body.hide-cursor * {
     #page5 .stat-box { width: 10.5vw !important; height: 12vh !important; font-size: 2.6vw !important; }
     #page5 .stat-box::before { font-size: 6rem !important; }
 }
+
+
+/* Gespeeld gemiddelde (pagina 5): heel lichte achtergrond, groen als het gelijk of
+   hoger is dan het TSG, rood als het eronder ligt. De rand blijft blauw. */
+#page5 .stat-box.gem-goed { background: rgba(46, 204, 113, 0.28) !important; }
+#page5 .stat-box.gem-slecht { background: rgba(231, 76, 60, 0.28) !important; }
