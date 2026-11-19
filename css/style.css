@@ -4917,3 +4917,8 @@ body.hide-cursor, body.hide-cursor * {
 #page14-3player .friendly3p-header .undo-btn,
 #page14-3player .friendly3p-header .minus-btn,
 #page14-3player .friendly3p-header .plus-btn { display: none !important; }
+
+/* Nodig-blokje (pagina 5): paarse rand en een vaag ⏳ achter het cijfer,
+   op dezelfde manier als de andere infoblokjes (📈 ⭐ 🎯). */
+#p1NodigAvg, #p2NodigAvg { border-color: #9b59b6 !important; }
+#p1NodigAvg::before, #p2NodigAvg::before { content: "💎"; color: #9b59b6; }
