@@ -4927,11 +4927,11 @@ body.hide-cursor, body.hide-cursor * {
    Alleen vanaf 1200 px breed; kleinere vensters houden de oude maten. */
 @media (min-width: 1200px) {
     /* Hoofdblokken: Max, huidig, Totaal */
-    #page5 .scoring-row-container { padding: 20px 24px !important; gap: 20px !important; }
-    #page5 .score-cell { min-height: 17vh !important; max-width: 16vw !important; padding: 25px 10px !important; }
-    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay { min-height: 17vh !important; max-width: 24vw !important; }
-    #page5 .cell-value { font-size: 5.4vw !important; }
-    #page5 #p1TotalCell .cell-value, #page5 #p2TotalCell .cell-value { font-size: 5.8vw !important; }
+    #page5 .scoring-row-container { padding: 20px 24px !important; gap: 16px !important; }
+    #page5 .score-cell { min-height: 19vh !important; max-width: 16vw !important; padding: 25px 6px !important; }
+    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay { min-height: 19vh !important; max-width: 24vw !important; }
+    #page5 .cell-value { font-size: 5.8vw !important; }
+    #page5 #p1TotalCell .cell-value, #page5 #p2TotalCell .cell-value { font-size: 6vw !important; }
 
     /* Infoblokjes: Gem, Nodig, Hoogste, TSG */
     #page5 .stat-box { width: 10.5vw !important; height: 12vh !important; font-size: 2.6vw !important; }
