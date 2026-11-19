@@ -358,30 +358,37 @@ function updateCurrentScoreDisplay() {
     document.getElementById('p2Highest').textContent = state.player2.highestSeries || 0;
     document.getElementById('p2TargetAvg').textContent = fmtTarget(state.player2.fixedTSG || '−');
 
-    // "Nodig": het gemiddelde dat je nog nodig hebt om je doel binnen 20 beurten
-    // (Driebanden: 40) te halen = (doel − score) / (resterende beurten).
-    // Bij Dames en tornooien bestaat die formule niet: dan tonen we het blokje niet.
-    const geenNodig = isDamesMatch || (state.currentMatch && state.currentMatch.discipline === 'Tornooi');
-    const doelBeurten = (state.currentMatch && state.currentMatch.discipline === 'Driebanden') ? 40 : 20;
-    const fmtNodig = (p) => {
+    window.updateNodigBlokken();
+}
+
+// "Nodig": punten per beurt die je nog moet maken om je doel binnen 20 beurten
+// (Driebanden: 40) te halen, naar boven afgerond. Het huidige, nog niet bevestigde
+// punt telt live mee. Bij Dames en tornooien bestaat die formule niet: geen blokje.
+window.updateNodigBlokken = function() {
+    const disc = state.currentMatch ? state.currentMatch.discipline : '';
+    const geenNodig = disc === 'Dames' || disc === 'Tornooi';
+    const doelBeurten = disc === 'Driebanden' ? 40 : 20;
+    const fmtNodig = (p, nr) => {
         const doel = parseFloat(String(p.target).replace(',', '.'));
         if (!doel || isNaN(doel)) return '−';
-        if (p.score >= doel) return '✓';
+        const live = state.currentPlayer === nr ? (state.currentInput || 0) : 0;
+        const rest = doel - p.score - live;
+        if (rest <= 0) return '✓';
         const over = doelBeurten - (p.turns ? p.turns.length : 0);
         if (over <= 0) return '—';
-        return ((doel - p.score) / over).toFixed(2).replace('.', ',');
+        return String(Math.ceil(rest / over));
     };
-    ['p1', 'p2'].forEach((k, i) => {
-        const box = document.getElementById(k + 'NodigAvg');
+    [1, 2].forEach(nr => {
+        const box = document.getElementById('p' + nr + 'NodigAvg');
         if (!box) return;
         if (geenNodig) {
             box.style.setProperty('display', 'none', 'important');
         } else {
             box.style.removeProperty('display');
-            box.textContent = fmtNodig(i === 0 ? state.player1 : state.player2);
+            box.textContent = fmtNodig(nr === 1 ? state.player1 : state.player2, nr);
         }
     });
-}
+};
 
 
 // ✅ NIEUW: globale mute-schakelaar voor alle geluiden (cijfers + zwijntje)
