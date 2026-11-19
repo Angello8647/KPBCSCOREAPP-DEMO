@@ -240,8 +240,8 @@ function updateScoringPage() {
 
     document.getElementById('currentPlayerDisplay').innerHTML = `
         <div style="text-align:center; pointer-events: none;">
-            <div style="font-size:6.5rem; font-weight:900; color:${textColor}; line-height:1; text-shadow: 0 0 25px ${glowColor}; transition: color 0.3s ease;">
-                B ${currentBeurt}
+            <div style="font-size:12vh; font-weight:900; color:#7dc4ff; line-height:1; text-shadow: 0 0 25px rgba(125, 196, 255, 0.45);">
+                ${currentBeurt}
             </div>
             <div style="margin-top:15px; font-size:1.1rem; color:#bdc3c7; font-weight:bold; text-transform: uppercase; letter-spacing: 1px;">
                 
