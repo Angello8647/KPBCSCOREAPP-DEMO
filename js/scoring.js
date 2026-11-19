@@ -357,6 +357,30 @@ function updateCurrentScoreDisplay() {
     document.getElementById('p2PlayedAvg').textContent = fmtAvg(state.player2);
     document.getElementById('p2Highest').textContent = state.player2.highestSeries || 0;
     document.getElementById('p2TargetAvg').textContent = fmtTarget(state.player2.fixedTSG || '−');
+
+    // "Nodig": het gemiddelde dat je nog nodig hebt om je doel binnen 20 beurten
+    // (Driebanden: 40) te halen = (doel − score) / (resterende beurten).
+    // Bij Dames en tornooien bestaat die formule niet: dan tonen we het blokje niet.
+    const geenNodig = isDamesMatch || (state.currentMatch && state.currentMatch.discipline === 'Tornooi');
+    const doelBeurten = (state.currentMatch && state.currentMatch.discipline === 'Driebanden') ? 40 : 20;
+    const fmtNodig = (p) => {
+        const doel = parseFloat(String(p.target).replace(',', '.'));
+        if (!doel || isNaN(doel)) return '−';
+        if (p.score >= doel) return '✓';
+        const over = doelBeurten - (p.turns ? p.turns.length : 0);
+        if (over <= 0) return '—';
+        return ((doel - p.score) / over).toFixed(2).replace('.', ',');
+    };
+    ['p1', 'p2'].forEach((k, i) => {
+        const box = document.getElementById(k + 'NodigAvg');
+        if (!box) return;
+        if (geenNodig) {
+            box.style.setProperty('display', 'none', 'important');
+        } else {
+            box.style.removeProperty('display');
+            box.textContent = fmtNodig(i === 0 ? state.player1 : state.player2);
+        }
+    });
 }
 
 
