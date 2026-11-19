@@ -391,6 +391,23 @@ window.updateNodigBlokken = function() {
             box.textContent = fmtNodig(nr === 1 ? state.player1 : state.player2, nr);
         }
     });
+
+    // Gespeeld gemiddelde: lichte groene kleur als het gelijk of hoger is dan het TSG,
+    // lichtrood als het eronder ligt. Geen kleur zonder gespeelde beurt of zonder TSG.
+    const kleurGem = (p, id) => {
+        const box = document.getElementById(id);
+        if (!box) return;
+        box.classList.remove('gem-goed', 'gem-slecht');
+        if (geenNodig) return;
+        const beurten = p.turns ? p.turns.length : 0;
+        const tsg = parseFloat(String(p.fixedTSG).replace(',', '.'));
+        if (!beurten || !tsg || isNaN(tsg)) return;
+        const gem = Math.round((p.score / beurten) * 100) / 100;
+        const tsgAfgerond = Math.round(tsg * 100) / 100;
+        box.classList.add(gem >= tsgAfgerond ? 'gem-goed' : 'gem-slecht');
+    };
+    kleurGem(state.player1, 'p1PlayedAvg');
+    kleurGem(state.player2, 'p2PlayedAvg');
 };
 
 
