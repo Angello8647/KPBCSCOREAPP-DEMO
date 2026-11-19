@@ -346,7 +346,14 @@ function updateCurrentScoreDisplay() {
     if (p1TotalCell) p1TotalCell.classList.toggle('dimmed', state.currentPlayer !== 1);
     if (p2TotalCell) p2TotalCell.classList.toggle('dimmed', state.currentPlayer !== 2);
 
-    const fmtAvg = (p) => p.turns && p.turns.length > 0 ? (p.score / p.turns.length).toFixed(2).replace('.', ',') : '0,00';
+    const fmtAvg = (p) => {
+        // De speler aan de beurt telt zijn lopende beurt mee (live); na het einde van de match niet meer.
+        const nr = p === state.player1 ? 1 : 2;
+        const lopend = state.currentPlayer === nr && !state.matchEnded;
+        const beurten = (p.turns ? p.turns.length : 0) + (lopend ? 1 : 0);
+        const punten = p.score + (lopend ? (state.currentInput || 0) : 0);
+        return beurten > 0 ? (punten / beurten).toFixed(2).replace('.', ',') : '0,00';
+    };
     const fmtTarget = (val) => val && val !== '−' ? parseFloat(String(val).replace(',', '.')).toFixed(2).replace('.', ',') : '−';
 
     document.getElementById('p1PlayedAvg').textContent = fmtAvg(state.player1);
@@ -399,10 +406,12 @@ window.updateNodigBlokken = function() {
         if (!box) return;
         box.classList.remove('gem-goed', 'gem-slecht');
         if (geenNodig) return;
-        const beurten = p.turns ? p.turns.length : 0;
+        const nr = p === state.player1 ? 1 : 2;
+        const lopend = state.currentPlayer === nr && !state.matchEnded;
+        const beurten = (p.turns ? p.turns.length : 0) + (lopend ? 1 : 0);
         const tsg = parseFloat(String(p.fixedTSG).replace(',', '.'));
         if (!beurten || !tsg || isNaN(tsg)) return;
-        const gem = Math.round((p.score / beurten) * 100) / 100;
+        const gem = Math.round(((p.score + (lopend ? (state.currentInput || 0) : 0)) / beurten) * 100) / 100;
         const tsgAfgerond = Math.round(tsg * 100) / 100;
         box.classList.add(gem >= tsgAfgerond ? 'gem-goed' : 'gem-slecht');
     };
