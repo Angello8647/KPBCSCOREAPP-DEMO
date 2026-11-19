@@ -4902,3 +4902,7 @@ body.hide-cursor, body.hide-cursor * {
 .alt-progress-bar.alt-progress-gehaald{
     background: #3b82f6;
 }
+/* Scorebord (pagina 5): de + / − / ongedaan-knoppen worden niet getoond, want de
+   bediening gebeurt met de presenter. Ze blijven bestaan in de HTML, enkel onzichtbaar. */
+#page5 .score-controls .score-btn { display: none !important; }
+#page5 .undo-btn-bottom { display: none !important; }
