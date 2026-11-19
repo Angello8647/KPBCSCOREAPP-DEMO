@@ -372,11 +372,15 @@ window.updateNodigBlokken = function() {
         const doel = parseFloat(String(p.target).replace(',', '.'));
         if (!doel || isNaN(doel)) return '−';
         const live = state.currentPlayer === nr ? (state.currentInput || 0) : 0;
-        const rest = doel - p.score - live;
+        const rest = doel - p.score - live;          // nog te maken tot het doel
         if (rest <= 0) return '✓';
-        const over = doelBeurten - (p.turns ? p.turns.length : 0);
-        if (over <= 0) return '—';
-        return String(Math.ceil(rest / over));
+        // Tempo = doel / 20 (Driebanden: 40) punten per beurt. "Nodig" = punten die je in
+        // DEZE beurt nog moet maken om na deze beurt op dat tempo te zitten (naar boven
+        // afgerond). Op of voor op het tempo: 0. Nooit meer dan wat er nog rest.
+        const beurtenGespeeld = p.turns ? p.turns.length : 0;
+        const tempoPunten = (doel * (beurtenGespeeld + 1)) / doelBeurten;
+        const nodig = Math.ceil(tempoPunten - p.score - live - 1e-9);
+        return String(Math.max(0, Math.min(nodig, rest)));
     };
     [1, 2].forEach(nr => {
         const box = document.getElementById('p' + nr + 'NodigAvg');
