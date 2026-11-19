@@ -4928,8 +4928,8 @@ body.hide-cursor, body.hide-cursor * {
 @media (min-width: 1200px) {
     /* Hoofdblokken: Max, huidig, Totaal */
     #page5 .scoring-row-container { padding: 20px 24px !important; gap: 16px !important; }
-    #page5 .score-cell { min-height: 19vh !important; max-width: 16vw !important; padding: 25px 6px !important; }
-    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay { min-height: 19vh !important; max-width: 24vw !important; }
+    #page5 .score-cell { min-height: 22vh !important; max-width: 16vw !important; padding: 25px 6px !important; }
+    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay { min-height: 22vh !important; max-width: 24vw !important; }
     #page5 .cell-value { font-size: 5.8vw !important; }
     #page5 #p1TotalCell .cell-value, #page5 #p2TotalCell .cell-value { font-size: 6vw !important; }
 
