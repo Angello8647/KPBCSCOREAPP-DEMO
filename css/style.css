@@ -4906,3 +4906,14 @@ body.hide-cursor, body.hide-cursor * {
    bediening gebeurt met de presenter. Ze blijven bestaan in de HTML, enkel onzichtbaar. */
 #page5 .score-controls .score-btn { display: none !important; }
 #page5 .undo-btn-bottom { display: none !important; }
+/* Vriendschappelijk 2 en 4 spelers (pagina 14): + / − / ongedaan niet tonen
+   (bediening met de presenter). "Match Stoppen" blijft staan. */
+#page14 .score-controls .plus-btn,
+#page14 .score-controls .minus-btn,
+#page14 .score-controls .undo-btn-bottom { display: none !important; }
+
+/* Vriendschappelijk 3 spelers: ongedaan, − en + in de kop niet tonen.
+   De beurt-aanduiding blijft staan. */
+#page14-3player .friendly3p-header .undo-btn,
+#page14-3player .friendly3p-header .minus-btn,
+#page14-3player .friendly3p-header .plus-btn { display: none !important; }
